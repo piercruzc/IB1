@@ -5048,3 +5048,527 @@ body {
   }
 }
 
+/* ============================================
+   SECCIONES ESPECÍFICAS DE CURSOS
+   ============================================ */
+
+/* Estructura del Curso - Tabla */
+.course-structure-section {
+  padding: 60px 0;
+  background-color: #f8f9fa;
+}
+
+.course-table-wrapper {
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.course-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+}
+
+.course-table thead {
+  background-color: #1e3a8a;
+  color: white;
+}
+
+.course-table th {
+  padding: 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.course-table tbody tr {
+  border-bottom: 1px solid #e5e7eb;
+  transition: background-color 0.3s ease;
+}
+
+.course-table tbody tr:hover {
+  background-color: #f3f4f6;
+}
+
+.course-table td {
+  padding: 16px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.course-table td:first-child {
+  font-weight: 600;
+  color: #1e3a8a;
+}
+
+.course-table em {
+  font-style: italic;
+  color: #4b5563;
+}
+
+.course-details {
+  background: #f0f4ff;
+  padding: 25px;
+  border-radius: 8px;
+  border-left: 4px solid #1e3a8a;
+}
+
+.course-details p {
+  margin: 8px 0;
+  font-size: 15px;
+  color: #1f2937;
+}
+
+.course-details strong {
+  color: #1e3a8a;
+  font-weight: 600;
+}
+
+/* Responsive Table */
+@media (max-width: 768px) {
+  .course-table-wrapper {
+    padding: 20px;
+    overflow-x: auto;
+  }
+
+  .course-table {
+    font-size: 13px;
+  }
+
+  .course-table th,
+  .course-table td {
+    padding: 12px 8px;
+  }
+
+  .course-details {
+    padding: 15px;
+  }
+}
+
+/* ============================================
+   SECCIÓN DE BENEFICIOS - VERSIÓN VERTICAL
+   ============================================ */
+
+.benefits-section-white {
+  padding: 60px 0;
+  background-color: #f8f9fa;
+}
+
+.benefits-white-card {
+  background: white;
+  border-radius: 20px;
+  padding: 50px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.benefit-item-vertical {
+  display: flex;
+  align-items: flex-start;
+  gap: 25px;
+  margin-bottom: 35px;
+  padding-bottom: 35px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.benefit-item-vertical:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.benefit-icon-circle {
+  flex-shrink: 0;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e0e7ff;
+  border-radius: 50%;
+  padding: 12px;
+}
+
+.benefit-icon-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.benefit-text-vertical {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.benefit-text-vertical p {
+  font-size: 16px;
+  line-height: 1.7;
+  color: #374151;
+  margin: 0;
+}
+
+.benefit-text-vertical strong {
+  color: #1e3a8a;
+  font-weight: 600;
+}
+
+/* Responsive Benefits Vertical */
+@media (max-width: 768px) {
+  .benefits-white-card {
+    padding: 30px 25px;
+  }
+
+  .benefit-item-vertical {
+    gap: 18px;
+    margin-bottom: 28px;
+    padding-bottom: 28px;
+  }
+
+  .benefit-icon-circle {
+    width: 60px;
+    height: 60px;
+  }
+
+  .benefit-text-vertical p {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .benefits-white-card {
+    padding: 25px 20px;
+  }
+
+  .benefit-item-vertical {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 15px;
+  }
+
+  .benefit-icon-circle {
+    width: 65px;
+    height: 65px;
+  }
+}
+
+/* ============================================
+   LISTA DE OBJETIVOS
+   ============================================ */
+
+.objectives-list {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0 0 0;
+}
+
+.objectives-list li {
+  padding-left: 35px;
+  margin-bottom: 16px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #374151;
+  position: relative;
+}
+
+.objectives-list li:before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #1e3a8a;
+  font-weight: bold;
+  font-size: 24px;
+}
+
+@media (max-width: 768px) {
+  .objectives-list li {
+    font-size: 14px;
+    padding-left: 25px;
+  }
+
+  .objectives-list li:before {
+    font-size: 20px;
+  }
+}
+
+/* ============================================
+   AJUSTES ADICIONALES PARA COHERENCIA
+   ============================================ */
+
+/* Mejorar espacio en content blocks cuando hay listas */
+.block-content ul.objectives-list {
+  margin-top: 20px;
+}
+
+.block-content h3 + ul.objectives-list {
+  margin-top: 25px;
+}
+
+/* Asegurar que las imágenes de banner se vean bien */
+.banner-img {
+  max-width: 100%;
+  height: auto;
+}
+
+.banner-svg-icon {
+  max-width: 80px;
+}
+
+@media (max-width: 768px) {
+  .banner-svg-icon {
+    max-width: 60px;
+  }
+}
+
+/* Espacio consistente entre secciones */
+.course-structure-section + .consultoria-second-title {
+  margin-top: 0;
+}
+
+.benefits-section-white + .consultoria-second-title {
+  margin-top: 0;
+}
+
+/* Mejoras en la tabla para móvil - scroll horizontal */
+@media (max-width: 640px) {
+  .course-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .course-table {
+    min-width: 600px;
+  }
+}
+
+/* ============================================
+   VARIANTES DE CONTENT BLOCKS
+   ============================================ */
+
+/* Para cuando usas reverse en content blocks */
+.content-block.reverse .block-image {
+  order: 2;
+}
+
+.content-block.reverse .block-content {
+  order: 1;
+}
+
+@media (max-width: 968px) {
+  .content-block.reverse .block-image,
+  .content-block.reverse .block-content {
+    order: unset;
+  }
+}
+
+
+/* ============================================
+   SECCIÓN DE OBJETIVOS CON 3 CARDS
+   ============================================ */
+
+.objectives-cards-section {
+  padding: 60px 0;
+  background-color: #f8f9fa;
+}
+
+.objectives-subtitle {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.objectives-subtitle p {
+  font-size: 18px;
+  color: #374151;
+  font-weight: 500;
+}
+
+.objectives-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.objective-card {
+  background: white;
+  border-radius: 16px;
+  padding: 35px 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.objective-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 35px rgba(30, 58, 138, 0.15);
+  border-color: #1e3a8a;
+}
+
+.objective-card-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.objective-card-icon img {
+  width: 70px;
+  height: 70px;
+  margin-bottom: 15px;
+  object-fit: contain;
+}
+
+.objective-card-icon h4 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin: 0;
+}
+
+.objective-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.objective-list li {
+  padding-left: 28px;
+  margin-bottom: 16px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #374151;
+  position: relative;
+}
+
+.objective-list li:last-child {
+  margin-bottom: 0;
+}
+
+.objective-list li:before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #1e3a8a;
+  font-weight: bold;
+  font-size: 22px;
+}
+
+/* Responsive Objectives Cards */
+@media (max-width: 1024px) {
+  .objectives-cards-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+  }
+}
+
+@media (max-width: 768px) {
+  .objectives-cards-section {
+    padding: 40px 0;
+  }
+
+  .objectives-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .objective-card {
+    padding: 30px 25px;
+  }
+
+  .objective-card-icon img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .objective-card-icon h4 {
+    font-size: 17px;
+  }
+
+  .objective-list li {
+    font-size: 14px;
+    padding-left: 25px;
+  }
+
+  .objective-list li:before {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .objective-card {
+    padding: 25px 20px;
+  }
+
+  .objective-card-icon img {
+    width: 55px;
+    height: 55px;
+  }
+
+  .objectives-subtitle p {
+    font-size: 16px;
+  }
+}
+
+/* ============================================
+   VARIANTE DE OBJECTIVE CARDS CON HEADER
+   (Para Bolsa de Valores) - SIN DEGRADADO
+   ============================================ */
+
+.objective-card-header {
+  background: #1e3a8a;  /* Color sólido sin degradado */
+  color: white;
+  padding: 20px;
+  border-radius: 12px 12px 0 0;
+  margin: -35px -30px 25px -30px;
+  text-align: center;
+}
+
+.objective-card-header h4 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+  color: white;
+}
+
+/* Ajuste para cards con header */
+.objectives-cards-section .objective-card:has(.objective-card-header) {
+  padding-top: 35px;
+}
+
+@media (max-width: 768px) {
+  .objective-card-header {
+    padding: 18px;
+    margin: -30px -25px 20px -25px;
+  }
+
+  .objective-card-header h4 {
+    font-size: 17px;
+  }
+
+  .objectives-cards-section .objective-card:has(.objective-card-header) {
+    padding-top: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .objective-card-header {
+    padding: 16px;
+    margin: -25px -20px 18px -20px;
+  }
+
+  .objective-card-header h4 {
+    font-size: 16px;
+  }
+
+  .objectives-cards-section .objective-card:has(.objective-card-header) {
+    padding-top: 25px;
+  }
+}
+

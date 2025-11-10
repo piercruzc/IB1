@@ -75,7 +75,7 @@
   <div class="container">
     <div class="academy-cards-grid">
       <!-- Card 1: Finanzas Personales -->
-      <div class="academy-card" data-tooltip="tooltip1">
+      <div class="academy-card">
         <div class="" style="margin-top: 8px;margin-bottom: 8px;">
           <img src="img/finanzas_personales_inteligentes.png" alt="Finanzas Personales">
         </div>
@@ -89,22 +89,11 @@
           <div class="feature">Plan de ahorro</div>
           <div class="feature">Crecimiento financiero</div>
         </div>
-        <a href="#contacto" class="card-btn">Empezar a dominar tus finanzas</a>
-
-        <!-- Tooltip -->
-        <div class="tooltip tooltip-left" id="tooltip1">
-          <div class="tooltip-content">
-            <h4>Finanzas Personales Inteligentes</h4>
-            <p>Aprende a organizar, planificar e invertir tus ingresos para construir estabilidad y libertad financiera.</p>
-            <p>La mayoría de las personas trabaja duro... pero su dinero no crece porque no saben cómo administrarlo.</p>
-            <p>En este programa aprenderás a controlar tus gastos, eliminar deudas, ahorrar estratégicamente e invertir con propósito, paso a paso.</p>
-            <p>En IBM Academy, te damos herramientas simples y aplicables —las que no enseñan en los bancos ni en la universidad— para que tomes el control de tu dinero y transformes tu futuro financiero con decisiones inteligentes.</p>
-          </div>
-        </div>
+        <a href="finanzas_personales_inteligentes.html" class="card-btn">Empezar a dominar tus finanzas</a>
       </div>
 
       <!-- Card 2: Inversiones en Activos Digitales -->
-      <div class="academy-card" data-tooltip="tooltip2">
+      <div class="academy-card">
         <div class="" style="margin-top: 8px;margin-bottom: 8px;">
           <img src="img/inversiones_activos_digitales.png" alt="Inversiones Digitales">
         </div>
@@ -118,21 +107,11 @@
           <div class="feature">Portafolio digital</div>
           <div class="feature">Estrategias rentables</div>
         </div>
-        <a href="#contacto" class="card-btn">Aprender a invertir en activos digitales</a>
-
-        <!-- Tooltip -->
-        <div class="tooltip tooltip-center" id="tooltip2">
-          <div class="tooltip-content">
-            <h4>Inversiones en Activos Digitales</h4>
-            <p>Domina el mundo de los activos digitales — criptomonedas, tokens y blockchain— con una metodología clara y profesional.</p>
-            <p>Muchos escuchan hablar de criptomonedas, tokens o blockchain, pero se sienten confundidos o temen perder dinero en un mercado que parece complejo y arriesgado. Este curso te guía paso a paso desde lo básico hasta las estrategias avanzadas de inversión en activos digitales, para que inviertas con claridad, seguridad y criterio profesional.</p>
-            <p>A diferencia de la información desordenada que encuentras en internet, en IBM Academy aprenderás con un enfoque estructurado, respaldado en experiencia y con una metodología que te prepara para crear tu propio portafolio digital de manera segura.</p>
-          </div>
-        </div>
+        <a href="inversiones_activos_digitales.html" class="card-btn">Aprender a invertir en activos digitales</a>
       </div>
 
       <!-- Card 3: Inversiones en Bolsa de Valores -->
-      <div class="academy-card" data-tooltip="tooltip3">
+      <div class="academy-card">
         <div class="" style="margin-top: 8px;margin-bottom: 8px;">
           <img src="img/inversion_bolsa_valores.png" alt="Bolsa de Valores">
         </div>
@@ -146,17 +125,7 @@
           <div class="feature">Estrategias reales</div>
           <div class="feature">Gestión de riesgo</div>
         </div>
-        <a href="#contacto" class="card-btn">Comenzar tu formación en bolsa</a>
-
-        <!-- Tooltip -->
-        <div class="tooltip tooltip-right" id="tooltip3">
-          <div class="tooltip-content">
-            <h4>Inversiones en Bolsa de Valores</h4>
-            <p>Descubre cómo funciona realmente el mercado bursátil y aprende a invertir con estrategia, análisis y visión.</p>
-            <p>Invertir en bolsa suele verse como un mundo solo para expertos o grandes capitales, lo que lleva a muchos a perder oportunidades o a arriesgarse sin una estrategia clara. En este curso descubrirás cómo funciona realmente el mercado bursátil, desde lo esencial hasta las estrategias avanzadas de inversión en acciones (participaciones en empresas), bonos (instrumentos de deuda de gobiernos o empresas), ETFs (fondos cotizados en bolsa) y derivados (futuros y opciones).</p>
-            <p>Aprenderás a analizar empresas, identificar oportunidades y gestionar riesgos como un inversionista profesional. En IBM Academy no solo te damos teoría: trabajamos con casos reales, simulaciones y herramientas de análisis para que salgas con la confianza de invertir en la bolsa con criterio y visión de largo plazo.</p>
-          </div>
-        </div>
+        <a href="inversion_bolsa_valores.html" class="card-btn">Comenzar tu formación en bolsa</a>
       </div>
     </div>
   </div>
@@ -168,7 +137,7 @@
     <div class="banner-wrapper">
       <div class="banner-content">
         <div class="banner-icon">
-         <img src="img/portafolio1.png" alt="Portafolio" class="banner-svg-icon">
+          <img src="img/portafolio1.png" alt="Portafolio" class="banner-svg-icon">
         </div>
         <div class="banner-text">
           <h2>Haz que tu dinero trabaje por ti. Nosotros te mostramos cómo.</h2>
@@ -222,7 +191,7 @@
     <div class="banner-wrapper">
       <div class="banner-content">
         <div class="banner-icon">
-         <img src="img/educacion_financiera_vida_real.png" alt="Educación financiera" class="banner-svg-icon">
+          <img src="img/educacion_financiera_vida_real.png" alt="Educación financiera" class="banner-svg-icon">
         </div>
         <div class="banner-text">
           <h2>Educación financiera para la vida real.</h2>
@@ -514,41 +483,6 @@
         if (!isActive) {
           item.classList.add('active');
         }
-      });
-    });
-
-    // Tooltip functionality mejorado
-    const academyCards = document.querySelectorAll('.academy-card');
-
-    academyCards.forEach(card => {
-      const tooltip = card.querySelector('.tooltip');
-      let tooltipTimeout;
-
-      card.addEventListener('mouseenter', function() {
-        clearTimeout(tooltipTimeout);
-
-        // Ocultar otros tooltips
-        academyCards.forEach(otherCard => {
-          if (otherCard !== card) {
-            const otherTooltip = otherCard.querySelector('.tooltip');
-            otherTooltip.style.opacity = '0';
-            otherTooltip.style.visibility = 'hidden';
-            otherTooltip.style.transform = 'translateY(-10px)';
-          }
-        });
-
-        // Mostrar tooltip actual
-        tooltip.style.opacity = '1';
-        tooltip.style.visibility = 'visible';
-        tooltip.style.transform = 'translateY(0)';
-      });
-
-      card.addEventListener('mouseleave', function() {
-        tooltipTimeout = setTimeout(() => {
-          tooltip.style.opacity = '0';
-          tooltip.style.visibility = 'hidden';
-          tooltip.style.transform = 'translateY(-10px)';
-        }, 200);
       });
     });
 
