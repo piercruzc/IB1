@@ -11,7 +11,7 @@
 <body>
 <!-- Hero Final -->
 <header class="hero-final">
-    <!-- Navbar con Extranet + Blog - MENÚ CON HOVER -->
+    <!-- Navbar con Extranet + Blog - MENÚ CON HOVER Y SUBMENÚ ACADEMY -->
     <nav class="navbar-blue">
         <div class="nav-container-blue">
             <div class="nav-logo">
@@ -31,7 +31,21 @@
                     <ul class="dropdown-menu">
                         <li><a href="consultoria_financiera.html">Consultoría y Asesoría Financiera</a></li>
                         <li><a href="gestion_patrimonial.html">Gestión Patrimonial</a></li>
-                        <li><a href="ibm_academy.html">IBM Academy</a></li>
+
+                        <!-- SUBMENÚ IBM ACADEMY -->
+                        <li class="nav-submenu">
+                            <a href="ibm_academy.html" class="submenu-toggle">
+                                IBM Academy
+                                <svg class="submenu-arrow" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </a>
+                            <ul class="submenu-dropdown">
+                                <li><a href="finanzas_personales_inteligentes.html">Finanzas Personales Inteligentes</a></li>
+                                <li><a href="inversiones_activos_digitales.html">Inversiones en Activos Digitales</a></li>
+                                <li><a href="inversion_bolsa_valores.html">Inversiones en Bolsa de Valores</a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </li>
                 <li><a href="planes.html" class="nav-link-blue">Planes de Inversión</a></li>
@@ -45,6 +59,7 @@
             </div>
         </div>
     </nav>
+
 
     <!-- Slider Final -->
     <div class="final-slider-container">
@@ -104,36 +119,45 @@
 </section>
 
 <!-- Nueva Sección de Cards de Servicios - CON ICONOS -->
+<!-- Nueva Sección de Cards de Servicios - CON ICONOS Y ENLACES -->
 <section class="services-overview">
     <div class="container">
         <div class="services-cards-grid">
-            <div class="service-overview-card">
+            <!-- Card 1: Consultoría Financiera -->
+            <a href="consultoria_financiera.html" class="service-overview-card">
                 <div class="service-card-icon">
                     <img src="img/asesoria_personalizada.png" alt="Consultoría y Asesoría Financiera" class="service-icon-svg">
                 </div>
                 <h3>Consultoría y Asesoría Financiera</h3>
-            </div>
-            <div class="service-overview-card">
+            </a>
+
+            <!-- Card 2: Gestión Patrimonial -->
+            <a href="gestion_patrimonial.html" class="service-overview-card">
                 <div class="service-card-icon">
                     <img src="img/gestion_patrimonial.png" alt="Gestión Patrimonial" class="service-icon-svg">
                 </div>
                 <h3>Gestión Patrimonial</h3>
-            </div>
-            <div class="service-overview-card">
+            </a>
+
+            <!-- Card 3: IBM Academy -->
+            <a href="ibm_academy.html" class="service-overview-card">
                 <div class="service-card-icon">
                     <img src="img/educacion_financiera.png" alt="Educación Financiera" class="service-icon-svg">
                 </div>
                 <h3>Educación y Formación Financiera</h3>
-            </div>
-            <div class="service-overview-card">
+            </a>
+
+            <!-- Card 4: Planes de Inversión -->
+            <a href="planes.html" class="service-overview-card">
                 <div class="service-card-icon">
                     <img src="img/inversiones_inteligentes.png" alt="Inversiones Inteligentes" class="service-icon-svg">
                 </div>
                 <h3>Inversiones Inteligentes</h3>
-            </div>
+            </a>
         </div>
     </div>
 </section>
+
 
 <!-- Primer Banner Azul CTA - CON IMAGEN -->
 <section class="blue-banner-cta">
@@ -387,15 +411,19 @@
                     </div>
 
                     <div class="form-group-modern">
-                        <label for="consulta">Tipo de consulta</label>
+                        <label for="consulta">Motivo de consulta</label>
                         <select id="consulta" required>
                             <option value="">Selecciona una opción</option>
+                            <option value="asesoria-finanzas-personales">Asesoría en Finanzas Personales</option>
+                            <option value="estructuracion-y-reestructuracion-de-deuda">Estructuración y Reestructuración de Deuda</option>
+                            <option value="asesoria-inversion-ahorro">Asesoría en Inversión y Ahorro</option>
+                            <option value="gestion-patrimonio">Gestión de Patrimonio</option>
+                            <option value="curso-finanzas-personales-inteligentes">Curso: Finanzas Personales Inteligentes</option>
+                            <option value="curso-inversiones-activos-digitales">Curso: Inversiones en Activos Digitales</option>
+                            <option value="curso-inversiones-bolsa-de-valores">Curso: Inversiones en Bolsa de Valores</option>
                             <option value="nivel-1">Plan Nivel 1 (S/ 500 - S/ 10,000)</option>
                             <option value="nivel-2">Plan Nivel 2 (S/ 10,001 - S/ 20,000)</option>
                             <option value="nivel-3">Plan Nivel 3 (S/ 20,001 a más)</option>
-                            <option value="consultoria">Consultoría y Asesoría Financiera</option>
-                            <option value="gestion-patrimonio">Gestión de Patrimonio</option>
-                            <option value="academy">IBM Academy - Cursos</option>
                         </select>
                     </div>
 
@@ -445,7 +473,7 @@
                 <p>Te acompañamos para que tu capital no solo se conserve, sino que crezca con propósito, seguridad y visión de futuro.</p>
 
                 <div class="closing-cta">
-                    <a href="planes.html" class="closing-btn">Conoce nuestros planes</a>
+                    <a href="nosotros.html" class="closing-btn">Conócenos más</a>
                 </div>
             </div>
         </div>

@@ -31,7 +31,21 @@
                     <ul class="dropdown-menu">
                         <li><a href="consultoria_financiera.html">Consultoría y Asesoría Financiera</a></li>
                         <li><a href="gestion_patrimonial.html">Gestión Patrimonial</a></li>
-                        <li><a href="ibm_academy.html">IBM Academy</a></li>
+
+                        <!-- SUBMENÚ IBM ACADEMY -->
+                        <li class="nav-submenu">
+                            <a href="ibm_academy.html" class="submenu-toggle">
+                                IBM Academy
+                                <svg class="submenu-arrow" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </a>
+                            <ul class="submenu-dropdown">
+                                <li><a href="finanzas_personales_inteligentes.html">Finanzas Personales Inteligentes</a></li>
+                                <li><a href="inversiones_activos_digitales.html">Inversiones en Activos Digitales</a></li>
+                                <li><a href="inversion_bolsa_valores.html">Inversiones en Bolsa de Valores</a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </li>
                 <li><a href="planes.html" class="nav-link-blue">Planes de Inversión</a></li>
@@ -54,10 +68,15 @@
 
         <div class="consultoria-hero-content">
             <div class="consultoria-hero-text">
+                <h1>Gestión Patrimonial</h1>
+                </div>
+        </div>
+        <!--<div class="consultoria-hero-content">
+            <div class="consultoria-hero-text">
                 <h1>Tu patrimonio no debe correr riesgos innecesarios.</h1>
                 <p>Asegura el bienestar de tu familia y haz que tu esfuerzo trascienda generaciones.</p>
             </div>
-        </div>
+        </div>-->
     </div>
 </header>
 
@@ -65,7 +84,7 @@
 <section class="consultoria-intro-section">
     <div class="container">
         <div class="consultoria-intro-content">
-            <h2>Tu patrimonio es más que dinero, es tu legado.</h2>
+            <h2>Tu patrimonio no debe correr riesgos innecesarios</h2>
         </div>
     </div>
 </section>
@@ -291,15 +310,19 @@
                     </div>
 
                     <div class="form-group-modern">
-                        <label for="consulta">Tipo de consulta</label>
+                        <label for="consulta">Motivo de consulta</label>
                         <select id="consulta" required>
                             <option value="">Selecciona una opción</option>
+                            <option value="asesoria-finanzas-personales">Asesoría en Finanzas Personales</option>
+                            <option value="estructuracion-y-reestructuracion-de-deuda">Estructuración y Reestructuración de Deuda</option>
+                            <option value="asesoria-inversion-ahorro">Asesoría en Inversión y Ahorro</option>
+                            <option value="gestion-patrimonio">Gestión de Patrimonio</option>
+                            <option value="curso-finanzas-personales-inteligentes">Curso: Finanzas Personales Inteligentes</option>
+                            <option value="curso-inversiones-activos-digitales">Curso: Inversiones en Activos Digitales</option>
+                            <option value="curso-inversiones-bolsa-de-valores">Curso: Inversiones en Bolsa de Valores</option>
                             <option value="nivel-1">Plan Nivel 1 (S/ 500 - S/ 10,000)</option>
                             <option value="nivel-2">Plan Nivel 2 (S/ 10,001 - S/ 20,000)</option>
                             <option value="nivel-3">Plan Nivel 3 (S/ 20,001 a más)</option>
-                            <option value="consultoria">Consultoría y Asesoría Financiera</option>
-                            <option value="gestion-patrimonio">Gestión de Patrimonio</option>
-                            <option value="academy">IBM Academy - Cursos</option>
                         </select>
                     </div>
 
