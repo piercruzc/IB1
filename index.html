@@ -22,7 +22,7 @@
             <ul class="nav-menu-blue">
                 <!-- DROPDOWN DE SERVICIOS CON HOVER -->
                 <li class="nav-dropdown">
-                    <a href="#servicios" class="nav-link-blue dropdown-toggle">
+                    <a href="javascript:void(0)" class="nav-link-blue dropdown-toggle">
                         Servicios
                         <svg class="dropdown-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -60,7 +60,6 @@
         </div>
     </nav>
 
-
     <!-- Slider Final -->
     <div class="final-slider-container">
         <div class="slider-wrapper-final">
@@ -88,14 +87,16 @@
         <button class="slider-arrow-final slider-left-final" id="prevBtn">‹</button>
         <button class="slider-arrow-final slider-right-final" id="nextBtn">›</button>
 
-        <!-- Mensaje con botón - MOVIDO A LA DERECHA -->
+        <!-- Mensaje con botón - ALINEADO A LA DERECHA CON BOTONES FIJOS -->
         <div class="slide-message-bottom slide-message-right">
             <div class="message-content-bottom">
-                <h3 class="message-title-bottom">Mientras ahorras, la inflación trabaja en tu contra.</h3>
-                <p class="message-description-bottom">Convierte tu dinero en una inversión que supere al tiempo y a
-                    los precios.</p>
+                <h3 class="message-title-bottom">El futuro de tu familia merece más que intereses mínimos.</h3>
+                <p class="message-description-bottom">Haz que tu patrimonio trabaje tan duro como tú.</p>
                 <div class="message-button-center">
-                    <a href="planes.html" class="message-btn-simple">Comenzar ahora</a>
+                    <!-- Botones con href al formulario -->
+                    <a href="#contacto" class="message-btn-simple" data-slide="1">Contactar asesor</a>
+                    <a href="#contacto" class="message-btn-simple" data-slide="2" style="display:none;">Comenzar ahora</a>
+                    <a href="#contacto" class="message-btn-simple" data-slide="3" style="display:none;">Conoce más</a>
                 </div>
             </div>
         </div>
@@ -118,7 +119,6 @@
     </div>
 </section>
 
-<!-- Nueva Sección de Cards de Servicios - CON ICONOS -->
 <!-- Nueva Sección de Cards de Servicios - CON ICONOS Y ENLACES -->
 <section class="services-overview">
     <div class="container">
@@ -157,7 +157,6 @@
         </div>
     </div>
 </section>
-
 
 <!-- Primer Banner Azul CTA - CON IMAGEN -->
 <section class="blue-banner-cta">
@@ -364,7 +363,7 @@
 </section>
 
 <!-- CTA Section Modificado - MOVIDO DEBAJO DE TESTIMONIALES CON FORMULARIO -->
-<section class="cta-modern-with-form">
+<section id="contacto" class="cta-modern-with-form">
     <div class="container">
         <div class="cta-content-with-form">
             <div class="cta-text">
@@ -483,7 +482,7 @@
 <!-- Footer -->
 <footer class="footer">
     <div class="container">
-        <div class="footer-content-three">
+        <div class="footer-content">
             <div class="footer-brand">
                 <img src="img/logo.png" alt="IBM FINTECH" class="footer-logo">
                 <p>Empoderar a nuestros clientes con asesoría financiera y propuestas de inversión innovadoras en
@@ -502,7 +501,7 @@
                 <div class="footer-column">
                     <h4>Empresa</h4>
                     <ul>
-                        <li><a href="#testimonios">Testimonios</a></li>
+                        <li><a href="nosotros.html">Nosotros</a></li>
                         <li><a href="blog.html">Blog</a></li>
                         <li><a href="#" target="_blank">Extranet</a></li>
                     </ul>
@@ -511,6 +510,12 @@
                     <h4>Contacto</h4>
                     <ul>
                         <li><a href="mailto:informacion@investmenbm.com">Email</a></li>
+                        <li><a href="https://wa.me/51933017232" target="_blank">WhatsApp</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Redes Sociales</h4>
+                    <ul>
                         <li><a href="https://www.facebook.com/share/1LfqRFXCco/" target="_blank">Facebook</a></li>
                         <li><a href="https://www.instagram.com/ibm.fintech?igsh=Nmc1ajdibjNwc3g5"
                                target="_blank">Instagram</a></li>
@@ -543,269 +548,325 @@
     </a>
 </div>
 
-<!-- Scripts -->
+<!-- Scripts - MENÚ MÓVIL MEJORADO -->
 <script>
-    class FinalSlider {
-        constructor() {
-            this.currentSlide = 1;
-            this.totalSlides = 3;
-            this.autoPlayInterval = null;
-            this.init();
-        }
+    // ===================================
+    // MENÚ MÓVIL COMPLETO
+    // ===================================
 
-        init() {
-            this.bindEvents();
-            this.startAutoPlay();
-            this.updateMessage();
-        }
-
-        bindEvents() {
-            document.querySelectorAll('.final-dot').forEach(dot => {
-                dot.addEventListener('click', (e) => {
-                    const slideNum = parseInt(e.target.getAttribute('data-slide'));
-                    this.goToSlide(slideNum);
-                });
-            });
-
-            const nextBtn = document.getElementById('nextBtn');
-            const prevBtn = document.getElementById('prevBtn');
-
-            if (nextBtn) {
-                nextBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    this.nextSlide();
-                });
-            }
-
-            if (prevBtn) {
-                prevBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    this.prevSlide();
-                });
-            }
-
-            const sliderContainer = document.querySelector('.final-slider-container');
-            if (sliderContainer) {
-                sliderContainer.addEventListener('mouseenter', () => this.pauseAutoPlay());
-                sliderContainer.addEventListener('mouseleave', () => this.resumeAutoPlay());
-            }
-        }
-
-        goToSlide(slideNum) {
-            document.querySelectorAll('.final-slide').forEach(slide => {
-                slide.classList.remove('active');
-            });
-            document.querySelectorAll('.final-dot').forEach(dot => {
-                dot.classList.remove('active');
-            });
-
-            const targetSlide = document.querySelector(`.final-slide[data-slide="${slideNum}"]`);
-            const targetDot = document.querySelector(`.final-dot[data-slide="${slideNum}"]`);
-
-            if (targetSlide) targetSlide.classList.add('active');
-            if (targetDot) targetDot.classList.add('active');
-
-            this.currentSlide = slideNum;
-            this.updateMessage();
-        }
-
-        nextSlide() {
-            const nextSlide = this.currentSlide === this.totalSlides ? 1 : this.currentSlide + 1;
-            this.goToSlide(nextSlide);
-        }
-
-        prevSlide() {
-            const prevSlide = this.currentSlide === 1 ? this.totalSlides : this.currentSlide - 1;
-            this.goToSlide(prevSlide);
-        }
-
-        startAutoPlay() {
-            this.autoPlayInterval = setInterval(() => this.nextSlide(), 8000);
-        }
-
-        pauseAutoPlay() {
-            if (this.autoPlayInterval) {
-                clearInterval(this.autoPlayInterval);
-            }
-        }
-
-        resumeAutoPlay() {
-            this.startAutoPlay();
-        }
-
-        updateMessage() {
-            const messages = {
-                1: {
-                    title: "El futuro de tu familia merece más que intereses mínimos.",
-                    description: "Haz que tu patrimonio trabaje tan duro como tú.",
-                    button: "Contactar asesor"
-                },
-                2: {
-                    title: "Deja de ser solo un ahorrista, conviértete en inversionista.",
-                    description: "El siguiente nivel financiero empieza con una decisión.",
-                    button: "Ver planes"
-                },
-                3: {
-                    title: "Mientras ahorras, la inflación trabaja en tu contra.",
-                    description: "Convierte tu dinero en una inversión que supere al tiempo y a los precios.",
-                    button: "Comenzar ahora"
-                }
-            };
-
-            const message = messages[this.currentSlide];
-            const titleElement = document.querySelector('.message-title-bottom');
-            const descriptionElement = document.querySelector('.message-description-bottom');
-            const buttonElement = document.querySelector('.message-btn-simple');
-
-            if (titleElement) titleElement.textContent = message.title;
-            if (descriptionElement) descriptionElement.textContent = message.description;
-            if (buttonElement) buttonElement.textContent = message.button;
-        }
-    }
-
-    // Hamburger Menu
-    const hamburger = document.querySelector('.hamburger-blue');
-    const navMenu = document.querySelector('.nav-menu-blue');
-
-    if (hamburger && navMenu) {
-        hamburger.addEventListener('click', function () {
-            this.classList.toggle('active');
-            navMenu.classList.toggle('active');
-        });
-    }
-
-    // Blog Slider Class
-    class BlogSlider {
-        constructor() {
-            this.currentSlide = 0;
-            this.totalSlides = 2; // 6 posts / 3 visible = 2 slides
-            this.slider = document.getElementById('blogSlider');
-            this.prevBtn = document.getElementById('blogPrev');
-            this.nextBtn = document.getElementById('blogNext');
-            this.dots = document.querySelectorAll('.blog-dot');
-            this.init();
-        }
-
-        init() {
-            this.bindEvents();
-            this.updateSlider();
-        }
-
-        bindEvents() {
-            // Botones de navegación
-            this.prevBtn.addEventListener('click', () => this.prevSlide());
-            this.nextBtn.addEventListener('click', () => this.nextSlide());
-
-            // Dots
-            this.dots.forEach((dot, index) => {
-                dot.addEventListener('click', () => this.goToSlide(index));
-            });
-
-            // Touch/Swipe support
-            let startX = 0;
-            let endX = 0;
-
-            this.slider.addEventListener('touchstart', (e) => {
-                startX = e.touches[0].clientX;
-            });
-
-            this.slider.addEventListener('touchend', (e) => {
-                endX = e.changedTouches[0].clientX;
-                const diff = startX - endX;
-
-                if (Math.abs(diff) > 50) {
-                    if (diff > 0) {
-                        this.nextSlide();
-                    } else {
-                        this.prevSlide();
-                    }
-                }
-            });
-        }
-
-        updateSlider() {
-            // Calcular el desplazamiento basado en el viewport
-            let translateX = 0;
-
-            if (window.innerWidth > 1024) {
-                // Desktop: 3 posts visible
-                translateX = -this.currentSlide * 100;
-            } else if (window.innerWidth > 768) {
-                // Tablet: 2 posts visible
-                translateX = -this.currentSlide * 100;
-            } else {
-                // Mobile: 1 post visible
-                translateX = -this.currentSlide * 100;
-            }
-
-            this.slider.style.transform = `translateX(${translateX}%)`;
-
-            // Update dots
-            this.dots.forEach((dot, index) => {
-                dot.classList.toggle('active', index === this.currentSlide);
-            });
-        }
-
-        nextSlide() {
-            this.currentSlide = (this.currentSlide + 1) % this.totalSlides;
-            this.updateSlider();
-        }
-
-        prevSlide() {
-            this.currentSlide = this.currentSlide === 0 ? this.totalSlides - 1 : this.currentSlide - 1;
-            this.updateSlider();
-        }
-
-        goToSlide(index) {
-            this.currentSlide = index;
-            this.updateSlider();
-        }
-    }
-
-    // Inicializar todos los sliders cuando el DOM esté listo
-    document.addEventListener('DOMContentLoaded', () => {
-        new FinalSlider();
-        new BlogSlider();
-
-        // Re-calcular el slider en resize
-        window.addEventListener('resize', () => {
-            const blogSlider = new BlogSlider();
-        });
-    });
-
-    // Dropdown functionality para mobile
     document.addEventListener('DOMContentLoaded', function() {
+        const hamburger = document.querySelector('.hamburger-blue');
+        const navMenu = document.querySelector('.nav-menu-blue');
+        const navLinks = document.querySelectorAll('.nav-link-blue');
+
+        // Toggle menú móvil
+        if (hamburger && navMenu) {
+            hamburger.addEventListener('click', function() {
+                this.classList.toggle('active');
+                navMenu.classList.toggle('active');
+                document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+            });
+        }
+
+        // Cerrar menú al hacer click en un link normal (no dropdown)
+        navLinks.forEach(link => {
+            if (!link.classList.contains('dropdown-toggle') && !link.classList.contains('submenu-toggle')) {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        hamburger.classList.remove('active');
+                        navMenu.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                });
+            }
+        });
+
+        // ===================================
+        // DROPDOWN PRINCIPAL (Servicios)
+        // ===================================
         const dropdowns = document.querySelectorAll('.nav-dropdown');
 
         dropdowns.forEach(dropdown => {
             const toggle = dropdown.querySelector('.dropdown-toggle');
-            const menu = dropdown.querySelector('.dropdown-menu');
 
-            // Solo agregar click listener en mobile
-            if (window.innerWidth <= 768) {
+            if (toggle) {
                 toggle.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    dropdown.classList.toggle('active');
-                });
+                    if (window.innerWidth <= 768) {
+                        e.preventDefault();
+                        e.stopPropagation();
 
-                // Cerrar dropdown al hacer click fuera
-                document.addEventListener('click', function(e) {
-                    if (!dropdown.contains(e.target)) {
-                        dropdown.classList.remove('active');
+                        // Cerrar otros dropdowns
+                        dropdowns.forEach(otherDropdown => {
+                            if (otherDropdown !== dropdown) {
+                                otherDropdown.classList.remove('active');
+                            }
+                        });
+
+                        // Toggle este dropdown
+                        dropdown.classList.toggle('active');
                     }
                 });
             }
         });
 
-        // Re-evaluar en resize
+        // ===================================
+        // SUBMENÚ IBM ACADEMY
+        // ===================================
+        const submenus = document.querySelectorAll('.nav-submenu');
+
+        submenus.forEach(submenu => {
+            const toggle = submenu.querySelector('.submenu-toggle');
+
+            if (toggle) {
+                toggle.addEventListener('click', function(e) {
+                    if (window.innerWidth <= 768) {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        // Toggle este submenú
+                        submenu.classList.toggle('active');
+                    }
+                });
+            }
+        });
+
+        // Cerrar menú al hacer click fuera
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
+                const isClickInside = e.target.closest('.navbar-blue');
+
+                if (!isClickInside && navMenu.classList.contains('active')) {
+                    hamburger.classList.remove('active');
+                    navMenu.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            }
+        });
+
+        // Resetear menú al cambiar tamaño de ventana
         window.addEventListener('resize', function() {
-            const dropdowns = document.querySelectorAll('.nav-dropdown');
-            dropdowns.forEach(dropdown => {
-                dropdown.classList.remove('active');
-            });
+            if (window.innerWidth > 768) {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+                document.body.style.overflow = '';
+
+                // Resetear dropdowns y submenus
+                dropdowns.forEach(dropdown => dropdown.classList.remove('active'));
+                submenus.forEach(submenu => submenu.classList.remove('active'));
+            }
+        });
+
+        // ===================================
+        // SLIDER PRINCIPAL
+        // ===================================
+        class FinalSlider {
+            constructor() {
+                this.currentSlide = 1;
+                this.totalSlides = 3;
+                this.autoPlayInterval = null;
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+                this.startAutoPlay();
+                this.updateMessage();
+            }
+
+            bindEvents() {
+                document.querySelectorAll('.final-dot').forEach(dot => {
+                    dot.addEventListener('click', (e) => {
+                        const slideNum = parseInt(e.target.getAttribute('data-slide'));
+                        this.goToSlide(slideNum);
+                    });
+                });
+
+                const nextBtn = document.getElementById('nextBtn');
+                const prevBtn = document.getElementById('prevBtn');
+
+                if (nextBtn) {
+                    nextBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.nextSlide();
+                    });
+                }
+
+                if (prevBtn) {
+                    prevBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.prevSlide();
+                    });
+                }
+
+                const sliderContainer = document.querySelector('.final-slider-container');
+                if (sliderContainer) {
+                    sliderContainer.addEventListener('mouseenter', () => this.pauseAutoPlay());
+                    sliderContainer.addEventListener('mouseleave', () => this.resumeAutoPlay());
+                }
+            }
+
+            goToSlide(slideNum) {
+                document.querySelectorAll('.final-slide').forEach(slide => {
+                    slide.classList.remove('active');
+                });
+                document.querySelectorAll('.final-dot').forEach(dot => {
+                    dot.classList.remove('active');
+                });
+
+                const targetSlide = document.querySelector(`.final-slide[data-slide="${slideNum}"]`);
+                const targetDot = document.querySelector(`.final-dot[data-slide="${slideNum}"]`);
+
+                if (targetSlide) targetSlide.classList.add('active');
+                if (targetDot) targetDot.classList.add('active');
+
+                this.currentSlide = slideNum;
+                this.updateMessage();
+            }
+
+            nextSlide() {
+                const nextSlide = this.currentSlide === this.totalSlides ? 1 : this.currentSlide + 1;
+                this.goToSlide(nextSlide);
+            }
+
+            prevSlide() {
+                const prevSlide = this.currentSlide === 1 ? this.totalSlides : this.currentSlide - 1;
+                this.goToSlide(prevSlide);
+            }
+
+            startAutoPlay() {
+                this.autoPlayInterval = setInterval(() => this.nextSlide(), 8000);
+            }
+
+            pauseAutoPlay() {
+                if (this.autoPlayInterval) {
+                    clearInterval(this.autoPlayInterval);
+                }
+            }
+
+            resumeAutoPlay() {
+                this.startAutoPlay();
+            }
+
+            updateMessage() {
+                const messages = {
+                    1: {
+                        title: "El futuro de tu familia merece más que intereses mínimos.",
+                        description: "Haz que tu patrimonio trabaje tan duro como tú."
+                    },
+                    2: {
+                        title: "Deja de ser solo un ahorrista, conviértete en inversionista.",
+                        description: "El siguiente nivel financiero empieza con una decisión."
+                    },
+                    3: {
+                        title: "Mientras ahorras, la inflación trabaja en tu contra.",
+                        description: "Convierte tu dinero en una inversión que supere al tiempo y a los precios."
+                    }
+                };
+
+                const message = messages[this.currentSlide];
+                const titleElement = document.querySelector('.message-title-bottom');
+                const descriptionElement = document.querySelector('.message-description-bottom');
+
+                // Ocultar todos los botones
+                document.querySelectorAll('.message-btn-simple').forEach(btn => {
+                    btn.style.display = 'none';
+                });
+
+                // Mostrar solo el botón del slide actual
+                const currentButton = document.querySelector(`.message-btn-simple[data-slide="${this.currentSlide}"]`);
+                if (currentButton) {
+                    currentButton.style.display = 'inline-block';
+                }
+
+                if (titleElement) titleElement.textContent = message.title;
+                if (descriptionElement) descriptionElement.textContent = message.description;
+            }
+        }
+
+        // ===================================
+        // SLIDER DE BLOG
+        // ===================================
+        class BlogSlider {
+            constructor() {
+                this.currentSlide = 0;
+                this.totalSlides = 2;
+                this.slider = document.getElementById('blogSlider');
+                this.prevBtn = document.getElementById('blogPrev');
+                this.nextBtn = document.getElementById('blogNext');
+                this.dots = document.querySelectorAll('.blog-dot');
+
+                if (this.slider) {
+                    this.init();
+                }
+            }
+
+            init() {
+                this.bindEvents();
+                this.updateSlider();
+            }
+
+            bindEvents() {
+                if (this.prevBtn) this.prevBtn.addEventListener('click', () => this.prevSlide());
+                if (this.nextBtn) this.nextBtn.addEventListener('click', () => this.nextSlide());
+
+                this.dots.forEach((dot, index) => {
+                    dot.addEventListener('click', () => this.goToSlide(index));
+                });
+
+                let startX = 0;
+                let endX = 0;
+
+                this.slider.addEventListener('touchstart', (e) => {
+                    startX = e.touches[0].clientX;
+                });
+
+                this.slider.addEventListener('touchend', (e) => {
+                    endX = e.changedTouches[0].clientX;
+                    const diff = startX - endX;
+
+                    if (Math.abs(diff) > 50) {
+                        if (diff > 0) {
+                            this.nextSlide();
+                        } else {
+                            this.prevSlide();
+                        }
+                    }
+                });
+            }
+
+            updateSlider() {
+                let translateX = -this.currentSlide * 100;
+                this.slider.style.transform = `translateX(${translateX}%)`;
+
+                this.dots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === this.currentSlide);
+                });
+            }
+
+            nextSlide() {
+                this.currentSlide = (this.currentSlide + 1) % this.totalSlides;
+                this.updateSlider();
+            }
+
+            prevSlide() {
+                this.currentSlide = this.currentSlide === 0 ? this.totalSlides - 1 : this.currentSlide - 1;
+                this.updateSlider();
+            }
+
+            goToSlide(index) {
+                this.currentSlide = index;
+                this.updateSlider();
+            }
+        }
+
+        // Inicializar sliders
+        new FinalSlider();
+        new BlogSlider();
+
+        window.addEventListener('resize', () => {
+            const blogSlider = new BlogSlider();
         });
     });
-
 </script>
 </body>
 

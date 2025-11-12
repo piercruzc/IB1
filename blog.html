@@ -22,7 +22,7 @@
             <ul class="nav-menu-blue">
                 <!-- DROPDOWN DE SERVICIOS CON HOVER -->
                 <li class="nav-dropdown">
-                    <a href="#servicios" class="nav-link-blue dropdown-toggle">
+                    <a href="javascript:void(0)" class="nav-link-blue dropdown-toggle">
                         Servicios
                         <svg class="dropdown-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -31,11 +31,25 @@
                     <ul class="dropdown-menu">
                         <li><a href="consultoria_financiera.html">Consultoría y Asesoría Financiera</a></li>
                         <li><a href="gestion_patrimonial.html">Gestión Patrimonial</a></li>
-                        <li><a href="ibm_academy.html">IBM Academy</a></li>
+
+                        <!-- SUBMENÚ IBM ACADEMY -->
+                        <li class="nav-submenu">
+                            <a href="ibm_academy.html" class="submenu-toggle">
+                                IBM Academy
+                                <svg class="submenu-arrow" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </a>
+                            <ul class="submenu-dropdown">
+                                <li><a href="finanzas_personales_inteligentes.html">Finanzas Personales Inteligentes</a></li>
+                                <li><a href="inversiones_activos_digitales.html">Inversiones en Activos Digitales</a></li>
+                                <li><a href="inversion_bolsa_valores.html">Inversiones en Bolsa de Valores</a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </li>
                 <li><a href="planes.html" class="nav-link-blue">Planes de Inversión</a></li>
-                <li><a href="blog.html" class="nav-link-blue active">Blog</a></li>
+                <li><a href="blog.html" class="nav-link-blue">Blog</a></li>
                 <li><a href="#" class="nav-cta-blue">Extranet</a></li>
             </ul>
             <div class="hamburger-blue">
@@ -338,10 +352,11 @@
 <!-- Footer -->
 <footer class="footer">
     <div class="container">
-        <div class="footer-content-three">
+        <div class="footer-content">
             <div class="footer-brand">
                 <img src="img/logo.png" alt="IBM FINTECH" class="footer-logo">
-                <p>Empoderar a nuestros clientes con asesoría financiera y propuestas de inversión innovadoras en activos digitales, garantizando el crecimiento y la seguridad de su patrimonio.</p>
+                <p>Empoderar a nuestros clientes con asesoría financiera y propuestas de inversión innovadoras en
+                    activos digitales, garantizando el crecimiento y la seguridad de su patrimonio.</p>
             </div>
             <div class="footer-links-grid">
                 <div class="footer-column">
@@ -356,7 +371,7 @@
                 <div class="footer-column">
                     <h4>Empresa</h4>
                     <ul>
-                        <li><a href="index.html#testimonios">Testimonios</a></li>
+                        <li><a href="nosotros.html">Nosotros</a></li>
                         <li><a href="blog.html">Blog</a></li>
                         <li><a href="#" target="_blank">Extranet</a></li>
                     </ul>
@@ -365,8 +380,15 @@
                     <h4>Contacto</h4>
                     <ul>
                         <li><a href="mailto:informacion@investmenbm.com">Email</a></li>
+                        <li><a href="https://wa.me/51933017232" target="_blank">WhatsApp</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Redes Sociales</h4>
+                    <ul>
                         <li><a href="https://www.facebook.com/share/1LfqRFXCco/" target="_blank">Facebook</a></li>
-                        <li><a href="https://www.instagram.com/ibm.fintech?igsh=Nmc1ajdibjNwc3g5" target="_blank">Instagram</a></li>
+                        <li><a href="https://www.instagram.com/ibm.fintech?igsh=Nmc1ajdibjNwc3g5"
+                               target="_blank">Instagram</a></li>
                         <li><a href="https://www.linkedin.com/company/ibm-fintech" target="_blank">LinkedIn</a></li>
                     </ul>
                 </div>
