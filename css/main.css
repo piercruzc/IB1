@@ -251,20 +251,6 @@ body {
     cursor: pointer;
     gap: 4px;
 }
-@media (max-width: 768px) {
-    .dropdown-menu,
-    .submenu-dropdown {
-        display: none;
-    }
-
-    .nav-dropdown.active .dropdown-menu {
-        display: block;
-    }
-
-    .nav-submenu.active .submenu-dropdown {
-        display: block;
-    }
-}
 
 .bar-blue {
     width: 25px;
@@ -2732,10 +2718,12 @@ body {
         transform: none;
         box-shadow: none;
         border-radius: 0;
+        display: block !important;
     }
 
     .nav-dropdown.active .dropdown-menu {
         max-height: 600px;
+        padding: 0.5rem 0;
     }
 
 
@@ -2796,6 +2784,7 @@ body {
         padding: 0;
         margin: 0;
         list-style: none;
+        display: block !important;
     }
 
     .nav-submenu.active .submenu-dropdown {
