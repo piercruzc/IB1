@@ -2629,13 +2629,40 @@ body {
 }
 
 @media (max-width: 768px) {
+    /* ===== CONTENEDOR ===== */
     .nav-container-blue {
         padding: 1rem 1.5rem;
     }
 
+    /* ===== HAMBURGER ===== */
     .hamburger-blue {
         display: flex;
+        flex-direction: column;
+        gap: 4px;
+        cursor: pointer;
     }
+
+    .bar-blue {
+        width: 25px;
+        height: 3px;
+        background-color: white;
+        transition: all 0.3s ease;
+        border-radius: 2px;
+    }
+
+    .hamburger-blue.active .bar-blue:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+    }
+
+    .hamburger-blue.active .bar-blue:nth-child(2) {
+        opacity: 0;
+    }
+
+    .hamburger-blue.active .bar-blue:nth-child(3) {
+        transform: rotate(-45deg) translate(7px, -6px);
+    }
+
+    /* ===== MENÚ PRINCIPAL ===== */
     .nav-menu-blue {
         position: fixed;
         top: 80px;
@@ -2645,7 +2672,7 @@ body {
         background: var(--primary-blue);
         flex-direction: column;
         align-items: flex-start;
-        padding: 0;
+        padding: 1rem 0;
         margin: 0;
         overflow-y: auto;
         transition: left 0.3s ease;
@@ -2656,97 +2683,137 @@ body {
         left: 0;
     }
 
-    /* ===== ITEMS DEL MENÚ ===== */
-    .nav-menu-blue > li {
+    /* ===== TODOS LOS ITEMS VISIBLES ===== */
+    .nav-menu-blue > li,
+    .dropdown-menu > li,
+    .submenu-dropdown > li {
         width: 100%;
         list-style: none;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    /* ===== LINKS SIMPLES ===== */
-    .nav-link-blue {
-        display: block;
-        width: 100%;
-        padding: 1.2rem 2rem;
-        color: white;
-        text-decoration: none;
-        font-size: 1rem;
-    }
-
-    .nav-link-blue::after {
-        display: none;
-    }
-
-    /* ===== DROPDOWN - SIN HOVER ===== */
-    .nav-dropdown {
-        width: 100%;
-    }
-
-    .dropdown-toggle {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-        padding: 1.2rem 2rem;
-        color: white;
-        cursor: pointer;
-        text-decoration: none;
-    }
-
-    .dropdown-icon {
-        width: 16px;
-        height: 16px;
-        transition: transform 0.3s ease;
-        flex-shrink: 0;
-    }
-    .nav-dropdown.active .dropdown-icon {
-        transform: rotate(180deg);
-    }
-
-    /* Menú desplegable */
-    .dropdown-menu {
-        position: static;
-        background: rgba(0, 0, 0, 0.3);
-        width: 100%;
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.3s ease;
-        padding: 0;
-        margin: 0;
-        opacity: 1;
-        visibility: visible;
-        transform: none;
-        box-shadow: none;
-        border-radius: 0;
         display: block !important;
     }
 
-    .nav-dropdown.active .dropdown-menu {
-        max-height: 600px;
-        padding: 0.5rem 0;
+    /* ===== MANTENER CONTENEDORES PERO SIN FUNCIONALIDAD ===== */
+    .nav-dropdown,
+    .nav-submenu {
+        display: block !important;
+        width: 100%;
     }
 
-
-    .dropdown-menu li {
-        list-style: none;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    /* ===== OCULTAR TOGGLES E ICONOS ===== */
+    .dropdown-toggle,
+    .submenu-toggle,
+    .dropdown-icon,
+    .submenu-arrow {
+        display: none !important;
     }
 
-    .dropdown-menu a {
-        display: block;
-        padding: 1rem 3rem;
-        color: rgba(255, 255, 255, 0.9);
-        text-decoration: none;
-        font-size: 0.95rem;
+    /* ===== MOSTRAR TODOS LOS MENÚS COMO LISTA PLANA ===== */
+    .dropdown-menu,
+    .submenu-dropdown {
+        position: static !important;
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        max-height: none !important;
+        overflow: visible !important;
+        background: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+    }
+
+    /* ===== ESTILOS DE TODOS LOS LINKS ===== */
+    .nav-link-blue,
+    .dropdown-menu a,
+    .submenu-dropdown a {
+        display: block !important;
+        width: 100%;
+        padding: 1.2rem 2rem;
+        color: white !important;
+        text-decoration: none !important;
+        font-size: 1rem;
         transition: background 0.2s ease;
     }
 
-    .dropdown-menu a:hover {
+    .nav-link-blue:hover,
+    .dropdown-menu a:hover,
+    .submenu-dropdown a:hover {
         background: rgba(255, 255, 255, 0.1);
-        color: white;
-        /*padding-left: 3.5rem;*/
     }
 
+    .nav-link-blue::after {
+        display: none !important;
+    }
+
+    /* ===== BOTÓN CTA ===== */
+    .nav-cta-blue {
+        display: block !important;
+        margin: 1.5rem 2rem !important;
+        width: calc(100% - 4rem) !important;
+        text-align: center !important;
+        padding: 1rem 2rem !important;
+        background: rgba(255, 255, 255, 0.2) !important;
+        border-radius: 8px !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    }
+
+    /* ===== EL RESTO DE TU CSS MÓVIL CONTINÚA AQUÍ ===== */
+    .container {
+        padding: 0 1.5rem;
+    }
+
+    /* ===== OCULTAR ICONOS SVG ===== */
+    .dropdown-icon,
+    .submenu-arrow {
+        display: none !important;
+    }
+
+    /* ===== RESTO DE TU CSS MÓVIL ===== */
+    .container {
+        padding: 0 1.5rem;
+    }
+
+    .final-slider-container,
+    .consultoria-hero-container {
+        height: 60vh;
+    }
+
+    .services-cards-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .testimonials-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cta-content-with-form {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .closing-info-container {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-links-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        gap: 1.5rem;
+        text-align: center;
+    }
     /* ===== SUBMENÚ IBM ACADEMY - SIMPLE ===== */
     .nav-submenu {
         width: 100%;
