@@ -2672,11 +2672,12 @@ body {
         background: var(--primary-blue);
         flex-direction: column;
         align-items: flex-start;
-        padding: 1rem 0;
+        padding: 0;
         margin: 0;
         overflow-y: auto;
         transition: left 0.3s ease;
         z-index: 999;
+        gap: 0;
     }
 
     .nav-menu-blue.active {
@@ -2684,25 +2685,19 @@ body {
     }
 
     /* ===== TODOS LOS ITEMS VISIBLES ===== */
-    .nav-menu-blue > li,
-    .dropdown-menu > li,
-    .submenu-dropdown > li {
+    .nav-menu-blue > li {
         width: 100%;
         list-style: none;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        display: block !important;
     }
 
     /* ===== MANTENER CONTENEDORES PERO SIN FUNCIONALIDAD ===== */
     .nav-dropdown,
     .nav-submenu {
-        display: block !important;
-        width: 100%;
+        position: static !important;
     }
 
     /* ===== OCULTAR TOGGLES E ICONOS ===== */
-    .dropdown-toggle,
-    .submenu-toggle,
     .dropdown-icon,
     .submenu-arrow {
         display: none !important;
@@ -2718,48 +2713,119 @@ body {
         transform: none !important;
         max-height: none !important;
         overflow: visible !important;
-        background: none !important;
+        background: rgba(0, 0, 0, 0.15) !important;
         padding: 0 !important;
         margin: 0 !important;
         box-shadow: none !important;
         border-radius: 0 !important;
+        width: 100% !important;
+        min-width: auto !important;
+        left: auto !important;
+        top: auto !important;
+    }
+    .dropdown-menu li,
+    .submenu-dropdown li {
+        width: 100%;
+        list-style: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .dropdown-toggle {
+        display: none !important;
     }
 
+
     /* ===== ESTILOS DE TODOS LOS LINKS ===== */
-    .nav-link-blue,
-    .dropdown-menu a,
-    .submenu-dropdown a {
+    .nav-link-blue {
         display: block !important;
         width: 100%;
-        padding: 1.2rem 2rem;
+        padding: 1.2rem 1.5rem;
         color: white !important;
         text-decoration: none !important;
         font-size: 1rem;
         transition: background 0.2s ease;
+        background: transparent;
     }
 
-    .nav-link-blue:hover,
-    .dropdown-menu a:hover,
-    .submenu-dropdown a:hover {
+    .nav-link-blue:hover {
         background: rgba(255, 255, 255, 0.1);
+        color: white !important;
     }
 
     .nav-link-blue::after {
         display: none !important;
     }
 
+    .dropdown-menu a {
+        display: block !important;
+        width: 100%;
+        padding: 1.2rem 2rem !important;
+        color: rgba(255, 255, 255, 0.9) !important;
+        text-decoration: none !important;
+        font-size: 0.95rem;
+        transition: background 0.2s ease;
+        background: transparent !important;
+        border-bottom: none !important;
+    }
+
+    .dropdown-menu a:hover {
+        background: rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+        padding-left: 2rem !important;
+    }
+    .submenu-dropdown {
+        background: rgba(0, 0, 0, 0.25) !important;
+    }
+
+    .submenu-dropdown a {
+        display: block !important;
+        width: 100%;
+        padding: 1rem 2.5rem !important;
+        color: rgba(255, 255, 255, 0.85) !important;
+        text-decoration: none !important;
+        font-size: 0.9rem;
+        transition: background 0.2s ease;
+        background: transparent !important;
+        border-bottom: none !important;
+        border-left: none !important;
+    }
+
+    .submenu-dropdown a:hover {
+        background: rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+        padding-left: 2.5rem !important;
+    }
+
     /* ===== BOTÓN CTA ===== */
     .nav-cta-blue {
         display: block !important;
-        margin: 1.5rem 2rem !important;
-        width: calc(100% - 4rem) !important;
+        margin: 1.5rem 1.5rem 2rem 1.5rem !important;
+        width: calc(100% - 3rem) !important;
         text-align: center !important;
         padding: 1rem 2rem !important;
         background: rgba(255, 255, 255, 0.2) !important;
         border-radius: 8px !important;
         border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        color: white !important;
     }
 
+    .nav-cta-blue:hover {
+        background: white !important;
+        color: var(--primary-blue) !important;
+    }
+    /* ===== DESHABILITAR TODOS LOS EFECTOS HOVER DE DROPDOWN EN DESKTOP ===== */
+    .nav-dropdown:hover .dropdown-menu {
+        opacity: 0 !important;
+        visibility: hidden !important;
+        max-height: 0 !important;
+        pointer-events: none !important;
+    }
+
+    .nav-submenu:hover .submenu-dropdown {
+        opacity: 0 !important;
+        visibility: hidden !important;
+        max-height: 0 !important;
+        pointer-events: none !important;
+    }
     /* ===== EL RESTO DE TU CSS MÓVIL CONTINÚA AQUÍ ===== */
     .container {
         padding: 0 1.5rem;
