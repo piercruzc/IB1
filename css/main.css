@@ -2630,7 +2630,7 @@ body {
 
 @media (max-width: 768px) {
     .nav-container-blue {
-        padding: 1rem 2rem;
+        padding: 1rem 1.5rem;
     }
 
     .hamburger-blue {
@@ -2642,14 +2642,13 @@ body {
         left: -100%;
         width: 100%;
         height: calc(100vh - 80px);
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
         background: var(--primary-blue);
-        gap: 0;
-        padding: 1rem 0;
-        transition: left 0.3s ease;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0;
+        margin: 0;
         overflow-y: auto;
+        transition: left 0.3s ease;
         z-index: 999;
     }
 
@@ -2657,58 +2656,82 @@ body {
         left: 0;
     }
 
+    /* ===== ITEMS DEL MENÚ ===== */
     .nav-menu-blue > li {
         width: 100%;
+        list-style: none;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    /* Dropdown principal en móvil */
+    /* ===== LINKS SIMPLES ===== */
+    .nav-link-blue {
+        display: block;
+        width: 100%;
+        padding: 1.2rem 2rem;
+        color: white;
+        text-decoration: none;
+        font-size: 1rem;
+    }
+
+    .nav-link-blue::after {
+        display: none;
+    }
+
+    /* ===== DROPDOWN - SIN HOVER ===== */
     .nav-dropdown {
         width: 100%;
     }
 
-    .nav-dropdown .dropdown-toggle {
+    .dropdown-toggle {
+        display: block;
         width: 100%;
-        padding: 1rem 2rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+        padding: 1.2rem 2rem;
+        color: white;
+        cursor: pointer;
     }
 
     .dropdown-icon {
+        width: 14px;
+        height: 14px;
         transition: transform 0.3s ease;
     }
-
     .nav-dropdown.active .dropdown-icon {
         transform: rotate(180deg);
     }
 
-    /* Menú dropdown dentro del móvil */
+    /* Menú desplegable */
     .dropdown-menu {
         position: static;
-        background: rgba(0, 0, 0, 0.2);
-        box-shadow: none;
-        border-radius: 0;
-        margin-top: 0;
+        background: rgba(0, 0, 0, 0.3);
         width: 100%;
-        opacity: 1;
-        visibility: visible;
-        transform: none;
         max-height: 0;
         overflow: hidden;
         transition: max-height 0.3s ease;
         padding: 0;
+        margin: 0;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        box-shadow: none;
+        border-radius: 0;
     }
 
     .nav-dropdown.active .dropdown-menu {
-        max-height: 500px;
-        padding: 0.5rem 0;
+        max-height: 600px;
+    }
+
+
+    .dropdown-menu li {
+        list-style: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .dropdown-menu a {
+        display: block;
+        padding: 1rem 3rem;
         color: rgba(255, 255, 255, 0.9);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        padding: 1rem 2rem 1rem 3rem;
+        text-decoration: none;
+        font-size: 0.95rem;
     }
 
     .dropdown-menu a:hover {
@@ -2717,20 +2740,22 @@ body {
         padding-left: 3.5rem;
     }
 
-    /* Submenú IBM Academy en móvil */
+    /* ===== SUBMENÚ IBM ACADEMY - SIMPLE ===== */
     .nav-submenu {
         width: 100%;
     }
 
     .submenu-toggle {
+        display: block;
         width: 100%;
-        padding: 1rem 2rem 1rem 3rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+        padding: 1rem 3rem;
+        color: rgba(255, 255, 255, 0.9);
+        cursor: pointer;
     }
 
     .submenu-arrow {
+        width: 12px;
+        height: 12px;
         transition: transform 0.3s ease;
     }
 
@@ -2740,57 +2765,57 @@ body {
 
     .submenu-dropdown {
         position: static;
-        opacity: 1;
-        visibility: visible;
-        transform: none;
-        box-shadow: none;
-        background: rgba(0, 0, 0, 0.15);
-        margin-left: 0;
-        margin-top: 0;
-        border-radius: 0;
+        background: rgba(0, 0, 0, 0.2);
+        width: 100%;
         max-height: 0;
         overflow: hidden;
         transition: max-height 0.3s ease;
         padding: 0;
+        margin: 0;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        box-shadow: none;
+        border-radius: 0;
     }
 
     .nav-submenu.active .submenu-dropdown {
-        max-height: 300px;
-        padding: 0.5rem 0;
+        max-height: 400px;
     }
 
-    .submenu-dropdown a {
-        padding: 0.8rem 2rem 0.8rem 4rem;
-        font-size: 0.9rem;
-        color: rgba(255, 255, 255, 0.85);
-        border-left: 2px solid transparent;
+    .submenu-dropdown li {
+        list-style: none;
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    .submenu-dropdown a:hover {
-        background: rgba(255, 255, 255, 0.1);
-        color: white;
-        border-left-color: white;
-        padding-left: 4.5rem;
+    .submenu-dropdown a {
+        display: block;
+        padding: 0.9rem 4rem;
+        color: rgba(255, 255, 255, 0.85);
+        text-decoration: none;
+        font-size: 0.9rem;
     }
 
-    /* Links normales */
-    .nav-link-blue {
-        width: 100%;
-        padding: 1rem 2rem;
-    }
-
-    /* Botón CTA */
+    /* ===== BOTÓN CTA ===== */
     .nav-cta-blue {
-        margin: 1rem 2rem !important;
+        display: block !important;
+        margin: 1.5rem 2rem !important;
         width: calc(100% - 4rem) !important;
         text-align: center !important;
-    }
-    /* ===== HOVER EN DESKTOP DESHABILITADO EN MÓVIL ===== */
-    .nav-dropdown:hover .dropdown-menu {
-        max-height: 0;
+        padding: 1rem 2rem !important;
     }
 
+    /* ===== DESHABILITAR TODOS LOS HOVERS ===== */
+    .nav-link-blue:hover,
+    .dropdown-menu a:hover,
+    .submenu-dropdown a:hover {
+        background: none;
+        color: inherit;
+        padding-left: inherit;
+        transform: none;
+    }
+
+    .nav-dropdown:hover .dropdown-menu,
     .nav-submenu:hover .submenu-dropdown {
         max-height: 0;
     }
