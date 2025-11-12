@@ -251,6 +251,20 @@ body {
     cursor: pointer;
     gap: 4px;
 }
+@media (max-width: 768px) {
+    .dropdown-menu,
+    .submenu-dropdown {
+        display: none;
+    }
+
+    .nav-dropdown.active .dropdown-menu {
+        display: block;
+    }
+
+    .nav-submenu.active .submenu-dropdown {
+        display: block;
+    }
+}
 
 .bar-blue {
     width: 25px;
@@ -2683,17 +2697,21 @@ body {
     }
 
     .dropdown-toggle {
-        display: block;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         width: 100%;
         padding: 1.2rem 2rem;
         color: white;
         cursor: pointer;
+        text-decoration: none;
     }
 
     .dropdown-icon {
-        width: 14px;
-        height: 14px;
+        width: 16px;
+        height: 16px;
         transition: transform 0.3s ease;
+        flex-shrink: 0;
     }
     .nav-dropdown.active .dropdown-icon {
         transform: rotate(180deg);
@@ -2732,12 +2750,13 @@ body {
         color: rgba(255, 255, 255, 0.9);
         text-decoration: none;
         font-size: 0.95rem;
+        transition: background 0.2s ease;
     }
 
     .dropdown-menu a:hover {
         background: rgba(255, 255, 255, 0.1);
         color: white;
-        padding-left: 3.5rem;
+        /*padding-left: 3.5rem;*/
     }
 
     /* ===== SUBMENÚ IBM ACADEMY - SIMPLE ===== */
@@ -2746,17 +2765,21 @@ body {
     }
 
     .submenu-toggle {
-        display: block;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         width: 100%;
         padding: 1rem 3rem;
         color: rgba(255, 255, 255, 0.9);
         cursor: pointer;
+        text-decoration: none;
     }
 
     .submenu-arrow {
-        width: 12px;
-        height: 12px;
+        width: 14px;
+        height: 14px;
         transition: transform 0.3s ease;
+        flex-shrink: 0;
     }
 
     .nav-submenu.active .submenu-arrow {
@@ -2772,15 +2795,12 @@ body {
         transition: max-height 0.3s ease;
         padding: 0;
         margin: 0;
-        opacity: 1;
-        visibility: visible;
-        transform: none;
-        box-shadow: none;
-        border-radius: 0;
+        list-style: none;
     }
 
     .nav-submenu.active .submenu-dropdown {
-        max-height: 400px;
+        max-height: 500px;
+        padding: 0.5rem 0;
     }
 
     .submenu-dropdown li {
@@ -2790,10 +2810,15 @@ body {
 
     .submenu-dropdown a {
         display: block;
-        padding: 0.9rem 4rem;
+        padding: 1rem 4rem;
         color: rgba(255, 255, 255, 0.85);
         text-decoration: none;
         font-size: 0.9rem;
+        transition: background 0.2s ease;
+    }
+    .submenu-dropdown a:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
     }
 
     /* ===== BOTÓN CTA ===== */
@@ -2806,18 +2831,18 @@ body {
     }
 
     /* ===== DESHABILITAR TODOS LOS HOVERS ===== */
-    .nav-link-blue:hover,
+    /*.nav-link-blue:hover,
     .dropdown-menu a:hover,
     .submenu-dropdown a:hover {
         background: none;
         color: inherit;
         padding-left: inherit;
         transform: none;
-    }
+    }*/
 
     .nav-dropdown:hover .dropdown-menu,
     .nav-submenu:hover .submenu-dropdown {
-        max-height: 0;
+        max-height: 0 !important;
     }
     /* Hamburger activo */
     .hamburger-blue {
