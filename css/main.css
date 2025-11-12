@@ -2629,6 +2629,13 @@ body {
 }
 
 @media (max-width: 768px) {
+    .nav-container-blue {
+        padding: 1rem 2rem;
+    }
+
+    .hamburger-blue {
+        display: flex;
+    }
     .nav-menu-blue {
         position: fixed;
         top: 80px;
@@ -2779,7 +2786,14 @@ body {
         width: calc(100% - 4rem) !important;
         text-align: center !important;
     }
+    /* ===== HOVER EN DESKTOP DESHABILITADO EN MÓVIL ===== */
+    .nav-dropdown:hover .dropdown-menu {
+        max-height: 0;
+    }
 
+    .nav-submenu:hover .submenu-dropdown {
+        max-height: 0;
+    }
     /* Hamburger activo */
     .hamburger-blue {
         display: flex;
