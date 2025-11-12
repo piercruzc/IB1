@@ -2797,7 +2797,7 @@ body {
 
     /* ===== BOTÓN CTA ===== */
     .nav-cta-blue {
-        display: block !important;
+        display: none !important;
         margin: 1.5rem 1.5rem 2rem 1.5rem !important;
         width: calc(100% - 3rem) !important;
         text-align: center !important;
