@@ -1,0 +1,14 @@
+services:
+  web:
+    build: .
+    container_name: ibm_web
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+    environment:
+      SMTP_HOST: smtp.tuservidor.com
+      SMTP_PORT: 587
+      SMTP_USER: tu-email@dominio.com
+      SMTP_PASS: tu-password
+    restart: always
