@@ -2,6 +2,7 @@
 /**
  * Script de procesamiento de formulario - IBM FINTECH S.A.C.
  * Envío de emails mediante PHPMailer y SMTP
+ * Variables de entorno desde Docker Compose
  */
 
 // Incluir PHPMailer (instalado vía Composer)
@@ -10,26 +11,25 @@ require_once __DIR__ . '/vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-// Configuración de errores (desactivar display en producción)
+// Configuración de errores
 error_reporting(E_ALL);
-ini_set('display_errors', 0);
+ini_set('display_errors', getenv('APP_DEBUG') === 'true' ? 1 : 0);
 
 // Configuración del charset
 header('Content-Type: text/html; charset=utf-8');
 
-// ===== CONFIGURACIÓN SMTP =====
-define('SMTP_HOST', 'smtp.gmail.com');        // Ejemplo: smtp.gmail.com, smtp.hostinger.com
-define('SMTP_PORT', 587);                           // 587 para TLS, 465 para SSL
-define('SMTP_USER', 'team.mkt@investmentbm.com');    // Tu usuario SMTP
-define('SMTP_PASS', 'jpcvqtqeuukpdvjr');          // Tu contraseña SMTP
-define('SMTP_SECURE', PHPMailer::ENCRYPTION_STARTTLS); // TLS o PHPMailer::ENCRYPTION_SMTPS para SSL
+// ===== CONFIGURACIÓN SMTP DESDE VARIABLES DE ENTORNO =====
+$smtp_host     = getenv('SMTP_HOST') ?: 'smtp.gmail.com';
+$smtp_port     = (int)(getenv('SMTP_PORT') ?: 587);
+$smtp_user     = getenv('SMTP_USER') ?: '';
+$smtp_pass     = getenv('SMTP_PASS') ?: '';
+$smtp_secure   = getenv('SMTP_SECURE') ?: 'tls'; // 'tls' o 'ssl'
 
 // ===== CONFIGURACIÓN DE EMAIL =====
-//$email_destino = "informacion@investmenbm.com";
-$email_destino = "taek.korn@gmail.com";
-$email_copia = ""; // Email opcional para copia (CC)
-$nombre_empresa = "IBM FINTECH S.A.C.";
-$email_remitente = SMTP_USER;
+$email_destino   = getenv('EMAIL_DESTINO') ?: 'informacion@investmenbm.com';
+$email_copia     = getenv('EMAIL_COPIA') ?: '';
+$nombre_empresa  = getenv('NOMBRE_EMPRESA') ?: 'IBM FINTECH S.A.C.';
+$email_remitente = $smtp_user;
 
 // ===== VALIDACIÓN Y SANITIZACIÓN DE DATOS =====
 function limpiar_dato($dato) {
@@ -256,12 +256,14 @@ $enviado = false;
 try {
     // Configuración del servidor SMTP
     $mail->isSMTP();
-    $mail->Host       = SMTP_HOST;
+    $mail->Host       = $smtp_host;
     $mail->SMTPAuth   = true;
-    $mail->Username   = SMTP_USER;
-    $mail->Password   = SMTP_PASS;
-    $mail->SMTPSecure = SMTP_SECURE;
-    $mail->Port       = SMTP_PORT;
+    $mail->Username   = $smtp_user;
+    $mail->Password   = $smtp_pass;
+    $mail->SMTPSecure = $smtp_secure === 'ssl'
+        ? PHPMailer::ENCRYPTION_SMTPS
+        : PHPMailer::ENCRYPTION_STARTTLS;
+    $mail->Port       = $smtp_port;
 
     // Desactivar debug en producción
     $mail->SMTPDebug  = 0; // 0 = off, 1 = client, 2 = client y server
@@ -300,12 +302,14 @@ if ($enviado) {
 
         // Configuración SMTP
         $mailCliente->isSMTP();
-        $mailCliente->Host       = SMTP_HOST;
+        $mailCliente->Host       = $smtp_host;
         $mailCliente->SMTPAuth   = true;
-        $mailCliente->Username   = SMTP_USER;
-        $mailCliente->Password   = SMTP_PASS;
-        $mailCliente->SMTPSecure = SMTP_SECURE;
-        $mailCliente->Port       = SMTP_PORT;
+        $mailCliente->Username   = $smtp_user;
+        $mailCliente->Password   = $smtp_pass;
+        $mailCliente->SMTPSecure = $smtp_secure === 'ssl'
+            ? PHPMailer::ENCRYPTION_SMTPS
+            : PHPMailer::ENCRYPTION_STARTTLS;
+        $mailCliente->Port       = $smtp_port;
         $mailCliente->SMTPDebug  = 0;
 
         // Configuración del email

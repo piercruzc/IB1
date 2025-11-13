@@ -9,8 +9,8 @@ services:
     environment:
       SMTP_HOST: smtp.gmail.com
       SMTP_PORT: 587
-      SMTP_USER: team.mkt@investmentbm.com
-      SMTP_PASS: jpcvqtqeuukpdvjr
+      SMTP_USER:
+      SMTP_PASS:
     restart: always
     networks:
       - webnet
