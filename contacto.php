@@ -26,8 +26,8 @@ $smtp_pass     = getenv('SMTP_PASS') ?: '';
 $smtp_secure   = getenv('SMTP_SECURE') ?: 'tls'; // 'tls' o 'ssl'
 
 // ===== CONFIGURACIÓN DE EMAIL =====
-//$email_destino   = getenv('EMAIL_DESTINO') ?: 'informacion@investmenbm.com';
-$email_destino   = getenv('EMAIL_DESTINO') ?: 'taek.korn@gmail.com';
+$email_destino   = getenv('EMAIL_DESTINO') ?: 'informacion@investmenbm.com';
+//$email_destino   = getenv('EMAIL_DESTINO') ?: 'taek.korn@gmail.com';
 $email_copia     = getenv('EMAIL_COPIA') ?: '';
 $nombre_empresa  = getenv('NOMBRE_EMPRESA') ?: 'IBM FINTECH S.A.C.';
 $email_remitente = $smtp_user;
@@ -351,7 +351,7 @@ if ($enviado) {
                                     </p>
                                     <div style="background-color: #f0f9ff; padding: 20px; border-radius: 8px; margin: 30px 0;">
                                         <p style="color: #22499a; margin: 0; text-align: center;">
-                                            <strong>📱 WhatsApp:</strong> +51 933 017 232<br>
+                                            <strong>📱 WhatsApp:</strong> +51 907 818 528<br>
                                             <strong>📧 Email:</strong> informacion@investmenbm.com
                                         </p>
                                     </div>
