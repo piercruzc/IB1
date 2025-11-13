@@ -1,24 +1,35 @@
 <?php
 /**
  * Script de procesamiento de formulario - IBM FINTECH S.A.C.
- * Recibe datos del formulario de contacto y envía email
+ * Envío de emails mediante PHPMailer y SMTP
  */
 
-// Configuración de errores (desactivar en producción)
+// Incluir PHPMailer (instalado vía Composer)
+require_once __DIR__ . '/vendor/autoload.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+// Configuración de errores (desactivar display en producción)
 error_reporting(E_ALL);
-ini_set('display_errors', 0); // Cambiar a 0 en producción
+ini_set('display_errors', 0);
 
 // Configuración del charset
 header('Content-Type: text/html; charset=utf-8');
 
-// ===== CONFIGURACIÓN DE EMAIL =====
-// Cambia este email por el email de IBM FINTECH donde quieres recibir los mensajes
-$email_destino = "informacion@investmenbm.com";
-$email_copia = ""; // Email opcional para copia (CC)
+// ===== CONFIGURACIÓN SMTP =====
+define('SMTP_HOST', 'smtp.gmail.com');        // Ejemplo: smtp.gmail.com, smtp.hostinger.com
+define('SMTP_PORT', 587);                           // 587 para TLS, 465 para SSL
+define('SMTP_USER', 'team.mkt@investmentbm.com');    // Tu usuario SMTP
+define('SMTP_PASS', 'jpcvqtqeuukpdvjr');          // Tu contraseña SMTP
+define('SMTP_SECURE', PHPMailer::ENCRYPTION_STARTTLS); // TLS o PHPMailer::ENCRYPTION_SMTPS para SSL
 
-// Configuración del remitente
+// ===== CONFIGURACIÓN DE EMAIL =====
+//$email_destino = "informacion@investmenbm.com";
+$email_destino = "taek.korn@gmail.com";
+$email_copia = ""; // Email opcional para copia (CC)
 $nombre_empresa = "IBM FINTECH S.A.C.";
-$email_remitente = "noreply@investmenbm.com"; // Email del servidor
+$email_remitente = SMTP_USER;
 
 // ===== VALIDACIÓN Y SANITIZACIÓN DE DATOS =====
 function limpiar_dato($dato) {
@@ -33,7 +44,6 @@ function validar_email($email) {
 }
 
 function validar_telefono($telefono) {
-    // Permite números, espacios, guiones, paréntesis y el símbolo +
     return preg_match('/^[\d\s\-\(\)\+]+$/', $telefono);
 }
 
@@ -44,6 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] != "POST") {
 }
 
 // ===== RECIBIR Y VALIDAR DATOS DEL FORMULARIO =====
+session_start();
 $errores = array();
 
 // Nombre completo (requerido)
@@ -93,7 +104,6 @@ if (!isset($_POST["privacidad"]) || $_POST["privacidad"] != "on") {
 
 // ===== SI HAY ERRORES, REDIRIGIR =====
 if (count($errores) > 0) {
-    // En producción, redirigir a una página de error
     $_SESSION['errores'] = $errores;
     header("Location: index.html#contacto");
     exit();
@@ -239,100 +249,145 @@ Fecha: " . date('d/m/Y H:i:s') . "
 Este email fue generado automáticamente desde el formulario de contacto.
 ";
 
-// ===== CONFIGURAR HEADERS DEL EMAIL =====
-$headers = array();
-$headers[] = "MIME-Version: 1.0";
-$headers[] = "Content-Type: text/html; charset=UTF-8";
-$headers[] = "From: $nombre_empresa <$email_remitente>";
-$headers[] = "Reply-To: $nombre <$email>";
-$headers[] = "X-Mailer: PHP/" . phpversion();
-$headers[] = "X-Priority: 1"; // Alta prioridad
+// ===== ENVIAR EMAIL PRINCIPAL CON PHPMAILER =====
+$mail = new PHPMailer(true);
+$enviado = false;
 
-// Agregar copia si está configurada
-if (!empty($email_copia)) {
-    $headers[] = "Cc: $email_copia";
+try {
+    // Configuración del servidor SMTP
+    $mail->isSMTP();
+    $mail->Host       = SMTP_HOST;
+    $mail->SMTPAuth   = true;
+    $mail->Username   = SMTP_USER;
+    $mail->Password   = SMTP_PASS;
+    $mail->SMTPSecure = SMTP_SECURE;
+    $mail->Port       = SMTP_PORT;
+
+    // Desactivar debug en producción
+    $mail->SMTPDebug  = 0; // 0 = off, 1 = client, 2 = client y server
+
+    // Configuración del email
+    $mail->CharSet    = 'UTF-8';
+    $mail->setFrom($email_remitente, $nombre_empresa);
+    $mail->addAddress($email_destino);
+
+    // Agregar copia si está configurada
+    if (!empty($email_copia)) {
+        $mail->addCC($email_copia);
+    }
+
+    $mail->addReplyTo($email, $nombre);
+
+    // Contenido del email
+    $mail->isHTML(true);
+    $mail->Subject = $asunto;
+    $mail->Body    = $cuerpo_html;
+    $mail->AltBody = $cuerpo_texto;
+
+    // Enviar
+    $enviado = $mail->send();
+
+} catch (Exception $e) {
+    // Registrar error en log
+    error_log("Error al enviar email: {$mail->ErrorInfo}");
+    $enviado = false;
 }
 
-// ===== ENVIAR EL EMAIL =====
-$enviado = mail($email_destino, $asunto, $cuerpo_html, implode("\r\n", $headers));
-
-// ===== ENVIAR EMAIL DE CONFIRMACIÓN AL CLIENTE (OPCIONAL) =====
+// ===== ENVIAR EMAIL DE CONFIRMACIÓN AL CLIENTE =====
 if ($enviado) {
-    $asunto_cliente = "Confirmación de Solicitud - IBM FINTECH";
+    try {
+        $mailCliente = new PHPMailer(true);
 
-    $cuerpo_cliente = '
-    <!DOCTYPE html>
-    <html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <title>Confirmación de Solicitud</title>
-    </head>
-    <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
-        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f4f4f4; padding: 20px;">
-            <tr>
-                <td align="center">
-                    <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden;">
-                        <tr>
-                            <td style="background: linear-gradient(135deg, #22499a 0%, #165ea9 100%); padding: 30px; text-align: center;">
-                                <h1 style="color: #ffffff; margin: 0; font-size: 24px;">IBM FINTECH S.A.C.</h1>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 40px 30px;">
-                                <h2 style="color: #22499a; margin: 0 0 20px 0;">¡Gracias por contactarnos!</h2>
-                                <p style="color: #333333; line-height: 1.6; margin-bottom: 20px;">
-                                    Estimado/a <strong>' . htmlspecialchars($nombre) . '</strong>,
-                                </p>
-                                <p style="color: #333333; line-height: 1.6; margin-bottom: 20px;">
-                                    Hemos recibido su solicitud de asesoría sobre <strong>' . htmlspecialchars($consulta_texto) . '</strong> 
-                                    y un asesor experto se pondrá en contacto con usted dentro de las próximas 24 horas.
-                                </p>
-                                <div style="background-color: #f0f9ff; padding: 20px; border-radius: 8px; margin: 30px 0;">
-                                    <p style="color: #22499a; margin: 0; text-align: center;">
-                                        <strong>📱 WhatsApp:</strong> +51 933 017 232<br>
-                                        <strong>📧 Email:</strong> informacion@investmenbm.com
+        // Configuración SMTP
+        $mailCliente->isSMTP();
+        $mailCliente->Host       = SMTP_HOST;
+        $mailCliente->SMTPAuth   = true;
+        $mailCliente->Username   = SMTP_USER;
+        $mailCliente->Password   = SMTP_PASS;
+        $mailCliente->SMTPSecure = SMTP_SECURE;
+        $mailCliente->Port       = SMTP_PORT;
+        $mailCliente->SMTPDebug  = 0;
+
+        // Configuración del email
+        $mailCliente->CharSet = 'UTF-8';
+        $mailCliente->setFrom($email_remitente, $nombre_empresa);
+        $mailCliente->addAddress($email, $nombre);
+
+        // Contenido
+        $mailCliente->isHTML(true);
+        $mailCliente->Subject = "Confirmación de Solicitud - IBM FINTECH";
+
+        $cuerpo_cliente = '
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <title>Confirmación de Solicitud</title>
+        </head>
+        <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f4f4f4; padding: 20px;">
+                <tr>
+                    <td align="center">
+                        <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden;">
+                            <tr>
+                                <td style="background: linear-gradient(135deg, #22499a 0%, #165ea9 100%); padding: 30px; text-align: center;">
+                                    <h1 style="color: #ffffff; margin: 0; font-size: 24px;">IBM FINTECH S.A.C.</h1>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 40px 30px;">
+                                    <h2 style="color: #22499a; margin: 0 0 20px 0;">¡Gracias por contactarnos!</h2>
+                                    <p style="color: #333333; line-height: 1.6; margin-bottom: 20px;">
+                                        Estimado/a <strong>' . htmlspecialchars($nombre) . '</strong>,
                                     </p>
-                                </div>
-                                <p style="color: #666666; font-size: 14px; line-height: 1.6;">
-                                    Saludos cordiales,<br>
-                                    <strong>Equipo IBM FINTECH</strong>
-                                </p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="background-color: #f8fafc; padding: 20px; text-align: center; font-size: 12px; color: #999999;">
-                                <p style="margin: 0;">© 2025 IBM FINTECH S.A.C. - Todos los derechos reservados</p>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
-    </body>
-    </html>
-    ';
+                                    <p style="color: #333333; line-height: 1.6; margin-bottom: 20px;">
+                                        Hemos recibido su solicitud de asesoría sobre <strong>' . htmlspecialchars($consulta_texto) . '</strong> 
+                                        y un asesor experto se pondrá en contacto con usted dentro de las próximas 24 horas.
+                                    </p>
+                                    <div style="background-color: #f0f9ff; padding: 20px; border-radius: 8px; margin: 30px 0;">
+                                        <p style="color: #22499a; margin: 0; text-align: center;">
+                                            <strong>📱 WhatsApp:</strong> +51 933 017 232<br>
+                                            <strong>📧 Email:</strong> informacion@investmenbm.com
+                                        </p>
+                                    </div>
+                                    <p style="color: #666666; font-size: 14px; line-height: 1.6;">
+                                        Saludos cordiales,<br>
+                                        <strong>Equipo IBM FINTECH</strong>
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="background-color: #f8fafc; padding: 20px; text-align: center; font-size: 12px; color: #999999;">
+                                    <p style="margin: 0;">© 2025 IBM FINTECH S.A.C. - Todos los derechos reservados</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </body>
+        </html>
+        ';
 
-    $headers_cliente = array();
-    $headers_cliente[] = "MIME-Version: 1.0";
-    $headers_cliente[] = "Content-Type: text/html; charset=UTF-8";
-    $headers_cliente[] = "From: $nombre_empresa <$email_remitente>";
-    $headers_cliente[] = "X-Mailer: PHP/" . phpversion();
+        $mailCliente->Body = $cuerpo_cliente;
+        $mailCliente->send();
 
-    mail($email, $asunto_cliente, $cuerpo_cliente, implode("\r\n", $headers_cliente));
+    } catch (Exception $e) {
+        // Error al enviar confirmación (no afecta el flujo principal)
+        error_log("Error al enviar confirmación: {$mailCliente->ErrorInfo}");
+    }
 }
 
-// ===== REGISTRO EN LOG (OPCIONAL) =====
+// ===== REGISTRO EN LOG =====
 $log_file = "contactos.log";
 $log_mensaje = date('Y-m-d H:i:s') . " | " . $nombre . " | " . $email . " | " . $telefono . " | " . $consulta_texto . "\n";
 file_put_contents($log_file, $log_mensaje, FILE_APPEND);
 
 // ===== REDIRECCIÓN =====
 if ($enviado) {
-    // Éxito: redirigir a página de confirmación
     header("Location: contacto.html");
     exit();
 } else {
-    // Error: redirigir al formulario con mensaje de error
     header("Location: index.html#contacto");
     exit();
 }
