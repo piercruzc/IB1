@@ -328,26 +328,26 @@
           <p>Completa el formulario y un experto te contactará</p>
         </div>
 
-          <form class="modern-form" method="post" action="contacto.php">>
+        <form class="modern-form" method="post" action="contacto.php">
           <div class="form-row">
             <div class="form-group-modern">
               <label for="nombre">Nombre completo</label>
-              <input type="text" id="nombre" placeholder="Ej: Juan Pérez" required>
+              <input type="text" id="nombre" name="nombre" placeholder="Ej: Juan Pérez" required>
             </div>
             <div class="form-group-modern">
               <label for="telefono">Teléfono</label>
-              <input type="tel" id="telefono" placeholder="Ej: +51 999 888 777" required>
+              <input type="tel" id="telefono" name="telefono" placeholder="Ej: +51 999 888 777" required>
             </div>
           </div>
 
           <div class="form-group-modern">
             <label for="email">Correo electrónico</label>
-            <input type="email" id="email" placeholder="tu-email@ejemplo.com" required>
+            <input type="email" id="email" name="email" placeholder="tu-email@ejemplo.com" required>
           </div>
 
           <div class="form-group-modern">
             <label for="consulta">Motivo de consulta</label>
-            <select id="consulta" required>
+            <select id="consulta" name="consulta" required>
               <option value="">Selecciona una opción</option>
               <option value="asesoria-finanzas-personales">Asesoría en Finanzas Personales</option>
               <option value="estructuracion-y-reestructuracion-de-deuda">Estructuración y Reestructuración de Deuda</option>
@@ -364,7 +364,7 @@
 
           <div class="form-group-modern">
             <label for="mensaje">Cuéntanos sobre tus objetivos</label>
-            <textarea id="mensaje" rows="4"
+            <textarea id="mensaje" name="mensaje" rows="4"
                       placeholder="Describe tu situación actual y objetivos financieros..."></textarea>
           </div>
 

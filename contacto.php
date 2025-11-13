@@ -26,7 +26,8 @@ $smtp_pass     = getenv('SMTP_PASS') ?: '';
 $smtp_secure   = getenv('SMTP_SECURE') ?: 'tls'; // 'tls' o 'ssl'
 
 // ===== CONFIGURACIÓN DE EMAIL =====
-$email_destino   = getenv('EMAIL_DESTINO') ?: 'informacion@investmenbm.com';
+//$email_destino   = getenv('EMAIL_DESTINO') ?: 'informacion@investmenbm.com';
+$email_destino   = getenv('EMAIL_DESTINO') ?: 'taek.korn@gmail.com';
 $email_copia     = getenv('EMAIL_COPIA') ?: '';
 $nombre_empresa  = getenv('NOMBRE_EMPRESA') ?: 'IBM FINTECH S.A.C.';
 $email_remitente = $smtp_user;
