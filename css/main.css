@@ -472,8 +472,9 @@ body {
     }
 
     .message-description-bottom {
-        font-size: 0.95rem;
-        text-align: center;
+        display: none;
+        /*font-size: 0.95rem;
+        text-align: center;*/
     }
 
     .message-button-center {
