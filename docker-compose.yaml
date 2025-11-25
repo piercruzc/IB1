@@ -11,10 +11,11 @@ services:
       SMTP_PORT: 587
       SMTP_USER:
       SMTP_PASS:
+      RECAPTCHA_SITE_KEY:
+      RECAPTCHA_SECRET_KEY:
     restart: always
     networks:
       - webnet
 networks:
   webnet:
     external: true
-

@@ -328,12 +328,10 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(
-            to bottom,
+    background: linear-gradient(to bottom,
             rgba(0, 0, 0, 0) 0%,
             rgba(0, 0, 0, 0.1) 40%,
-            rgba(0, 0, 0, 0.6) 100%
-    );
+            rgba(0, 0, 0, 0.6) 100%);
     z-index: 3;
     pointer-events: none;
 }
@@ -394,7 +392,8 @@ body {
     color: white;
     text-align: right;
     margin-left: auto;
-    margin-right: 1.5rem; /* REDUCIDO DE 3REM A 1.5REM */
+    margin-right: 1.5rem;
+    /* REDUCIDO DE 3REM A 1.5REM */
 }
 
 .message-title-bottom {
@@ -417,7 +416,8 @@ body {
 
 .message-button-center {
     display: flex;
-    justify-content: flex-end; /* CAMBIADO DE CENTER A FLEX-END */
+    justify-content: flex-end;
+    /* CAMBIADO DE CENTER A FLEX-END */
     margin-bottom: 1rem;
 }
 
@@ -439,6 +439,7 @@ body {
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(34, 73, 154, 0.4);
 }
+
 /* ================================================ */
 /* ========= RESPONSIVE MENSAJE SLIDER =========== */
 /* ================================================ */
@@ -460,29 +461,36 @@ body {
 
 @media (max-width: 768px) {
     .message-content-bottom {
-        max-width: 100%;
+        max-width: 90%;
+        /* Aumentado para dar más espacio */
         margin: 0 auto;
-        padding: 0 2rem;
+        padding: 0 1rem;
+        /* Reducido padding lateral */
         text-align: center;
     }
 
     .message-title-bottom {
-        font-size: 1.6rem;
+        font-size: 1.5rem;
+        /* Ajustado tamaño */
         text-align: center;
+        margin-bottom: 1.5rem;
+        /* Más espacio entre título y botón */
+        line-height: 1.3;
     }
 
     .message-description-bottom {
         display: none;
-        /*font-size: 0.95rem;
-        text-align: center;*/
     }
 
     .message-button-center {
         justify-content: center;
+        margin-bottom: 0;
     }
 
     .slide-message-bottom {
-        bottom: 2rem;
+        bottom: 15%;
+        /* Posicionamiento relativo */
+        padding: 0;
     }
 }
 
@@ -582,12 +590,10 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(
-            to bottom,
+    background: linear-gradient(to bottom,
             rgba(0, 0, 0, 0.4) 0%,
             rgba(0, 0, 0, 0.3) 50%,
-            rgba(0, 0, 0, 0.6) 100%
-    );
+            rgba(0, 0, 0, 0.6) 100%);
     z-index: 1;
 }
 
@@ -604,7 +610,8 @@ body {
 }
 
 .consultoria-hero-text h1 {
-    font-size: 2.5rem;  /* Aumentado de 1.8rem a 2.5rem */
+    font-size: 2.5rem;
+    /* Aumentado de 1.8rem a 2.5rem */
     font-weight: 700;
     line-height: 1.3;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
@@ -1946,7 +1953,7 @@ body {
     right: 0;
     width: 50%;
     height: 100%;
-    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
     clip-path: polygon(20% 0%, 100% 0%, 100% 100%, 0% 100%);
 }
 
@@ -2116,12 +2123,12 @@ body {
     background: white;
 }
 
-.cta-form-container .checkbox-container input:checked + .checkmark {
+.cta-form-container .checkbox-container input:checked+.checkmark {
     background: var(--primary-blue);
     border-color: var(--primary-blue);
 }
 
-.cta-form-container .checkbox-container input:checked + .checkmark::after {
+.cta-form-container .checkbox-container input:checked+.checkmark::after {
     content: '✓';
     color: white;
     font-weight: 700;
@@ -2459,9 +2466,11 @@ body {
     0% {
         box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
     }
+
     50% {
         box-shadow: 0 4px 20px rgba(37, 211, 102, 0.7);
     }
+
     100% {
         box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
     }
@@ -2562,6 +2571,7 @@ body {
 }
 
 @media (max-width: 1024px) {
+
     .final-slider-container,
     .consultoria-hero-container {
         height: 60vh;
@@ -2630,6 +2640,7 @@ body {
 }
 
 @media (max-width: 768px) {
+
     /* ===== CONTENEDOR ===== */
     .nav-container-blue {
         padding: 1rem 1.5rem;
@@ -2686,7 +2697,7 @@ body {
     }
 
     /* ===== TODOS LOS ITEMS VISIBLES ===== */
-    .nav-menu-blue > li {
+    .nav-menu-blue>li {
         width: 100%;
         list-style: none;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -2724,12 +2735,14 @@ body {
         left: auto !important;
         top: auto !important;
     }
+
     .dropdown-menu li,
     .submenu-dropdown li {
         width: 100%;
         list-style: none;
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
+
     .dropdown-toggle {
         display: none !important;
     }
@@ -2773,6 +2786,7 @@ body {
         color: white !important;
         padding-left: 2rem !important;
     }
+
     .submenu-dropdown {
         background: rgba(0, 0, 0, 0.25) !important;
     }
@@ -2813,6 +2827,7 @@ body {
         background: white !important;
         color: var(--primary-blue) !important;
     }
+
     /* ===== DESHABILITAR TODOS LOS EFECTOS HOVER DE DROPDOWN EN DESKTOP ===== */
     .nav-dropdown:hover .dropdown-menu {
         opacity: 0 !important;
@@ -2827,6 +2842,7 @@ body {
         max-height: 0 !important;
         pointer-events: none !important;
     }
+
     /* ===== EL RESTO DE TU CSS MÓVIL CONTINÚA AQUÍ ===== */
     .container {
         padding: 0 1.5rem;
@@ -2881,6 +2897,7 @@ body {
         gap: 1.5rem;
         text-align: center;
     }
+
     /* ===== SUBMENÚ IBM ACADEMY - SIMPLE ===== */
     .nav-submenu {
         width: 100%;
@@ -2939,6 +2956,7 @@ body {
         font-size: 0.9rem;
         transition: background 0.2s ease;
     }
+
     .submenu-dropdown a:hover {
         background: rgba(255, 255, 255, 0.1);
         color: white;
@@ -2967,6 +2985,7 @@ body {
     .nav-submenu:hover .submenu-dropdown {
         max-height: 0 !important;
     }
+
     /* Hamburger activo */
     .hamburger-blue {
         display: flex;
@@ -4840,7 +4859,7 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
     color: white;
     padding: 2rem 3rem 1rem 3rem;
     font-size: 0.9rem;
@@ -5108,7 +5127,7 @@ body {
 
 .share-btn:hover {
     transform: translateY(-2px) scale(1.05);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 /* Post Navigation */
@@ -5666,7 +5685,7 @@ body {
     margin-top: 20px;
 }
 
-.block-content h3 + ul.objectives-list {
+.block-content h3+ul.objectives-list {
     margin-top: 25px;
 }
 
@@ -5687,11 +5706,11 @@ body {
 }
 
 /* Espacio consistente entre secciones */
-.course-structure-section + .consultoria-second-title {
+.course-structure-section+.consultoria-second-title {
     margin-top: 0;
 }
 
-.benefits-section-white + .consultoria-second-title {
+.benefits-section-white+.consultoria-second-title {
     margin-top: 0;
 }
 
@@ -5721,6 +5740,7 @@ body {
 }
 
 @media (max-width: 968px) {
+
     .content-block.reverse .block-image,
     .content-block.reverse .block-content {
         order: unset;
@@ -5883,7 +5903,8 @@ body {
    ============================================ */
 
 .objective-card-header {
-    background: #1e3a8a;  /* Color sólido sin degradado */
+    background: #1e3a8a;
+    /* Color sólido sin degradado */
     color: white;
     padding: 20px;
     border-radius: 12px 12px 0 0;
@@ -5932,6 +5953,7 @@ body {
         padding-top: 25px;
     }
 }
+
 /* ================================================ */
 /* ========= PÁGINA NOSOTROS - ESTILOS ========== */
 /* ================================================ */
@@ -6041,14 +6063,14 @@ body {
     padding-right: 20px;
 }
 
-.propuesta-text > p {
+.propuesta-text>p {
     font-size: 17px;
     line-height: 1.8;
     color: #333;
     margin-bottom: 25px;
 }
 
-.propuesta-text > p strong {
+.propuesta-text>p strong {
     color: var(--primary-blue);
     font-weight: 700;
 }
@@ -6171,7 +6193,7 @@ body {
         padding-right: 0;
     }
 
-    .propuesta-text > p {
+    .propuesta-text>p {
         font-size: 16px;
     }
 
@@ -6241,7 +6263,7 @@ body {
         gap: 30px;
     }
 
-    .propuesta-text > p {
+    .propuesta-text>p {
         font-size: 15px;
         margin-bottom: 20px;
     }
@@ -6274,6 +6296,7 @@ body {
         margin-top: 20px;
     }
 }
+
 /* ================================================ */
 /* ====== ICONOS EN BLOQUES DE CONTENIDO ======== */
 /* ================================================ */
@@ -6305,6 +6328,7 @@ body {
 .block-content p {
     text-align: left;
 }
+
 /* ================================================ */
 /* ====== ICONOS EN BLOQUES DE CONTENIDO ======== */
 /* ================================================ */
@@ -6956,4 +6980,3 @@ body {
         font-size: 0.85rem;
     }
 }
-
