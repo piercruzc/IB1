@@ -432,13 +432,8 @@ file_put_contents($log_file, $log_mensaje, FILE_APPEND);
 
 // ===== REDIRECCIÓN =====
 if ($enviado) {
-    $redirect_url = $_POST['redirect_url'] ?? 'contacto.html';
-    if (strpos($redirect_url, '?') !== false) {
-        $redirect_url .= '&status=success';
-    } else {
-        $redirect_url .= '?status=success';
-    }
-    header("Location: " . $redirect_url);
+    // Redirigir siempre a contacto.html en caso de éxito
+    header("Location: contacto.html");
     exit();
 } else {
     $redirect_url = $_POST['redirect_url'] ?? 'contacto.html';
