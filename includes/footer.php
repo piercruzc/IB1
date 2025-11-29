@@ -21,7 +21,7 @@
                     <ul>
                         <li><a href="nosotros.html">Nosotros</a></li>
                         <!--<li><a href="blog.html">Blog</a></li>-->
-                        <li><a href="#" target="_blank">Extranet</a></li>
+                        <!--<li><a href="#" target="_blank">Extranet</a></li>-->
                     </ul>
                 </div>
                 <div class="footer-column">
