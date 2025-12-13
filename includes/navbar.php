@@ -38,7 +38,7 @@
                     </li>
                 </ul>
             </li>
-            <li><a href="planes.html" class="nav-link-blue">Planes de Inversión</a></li>
+            <!--<li><a href="planes.html" class="nav-link-blue">Planes de Inversión</a></li>-->
             <!--<li><a href="blog.html" class="nav-link-blue">Blog</a></li>-->
             <li><a href="nosotros.html" class="nav-link-blue">Nosotros</a></li>
             <!--<li><a href="#" class="nav-cta-blue">Extranet</a></li>-->
