@@ -483,22 +483,37 @@ body {
         margin-bottom: 0;
     }
 
-    .slide-message-bottom {
+    /* Boost specificity and enforce full width/centering */
+    .final-slider-container .slide-message-bottom {
         bottom: 0;
         top: 0;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
         height: 100%;
-        transform: none;
+        transform: none !important;
         padding: 0;
         padding-bottom: 3rem;
+        margin: 0;
+
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        text-align: center;
     }
 
     .slide-message-bottom.slide-message-right {
-        left: 0;
-        right: 0;
+        left: 0 !important;
+        right: 0 !important;
+        text-align: center !important;
+    }
+
+    .message-content-bottom {
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto !important;
+        padding: 0 1.5rem;
         text-align: center;
     }
 }
