@@ -13,7 +13,7 @@
                         <li><a href="consultoria_financiera.html">Consultoría y Asesoría Financiera</a></li>
                         <li><a href="gestion_patrimonial.html">Gestión Patrimonial</a></li>
                         <li><a href="ibm_academy.html">IBM Academy</a></li>
-                        <li><a href="planes.html">Planes de Inversión</a></li>
+                        <!--<li><a href="planes.html">Planes de Inversión</a></li>-->
                     </ul>
                 </div>
                 <div class="footer-column">
