@@ -1,3 +1,79 @@
+<?php
+require_once __DIR__ . '/includes/db.php';
+
+$db = getDB();
+
+// Pagination
+$perPage = 6;
+$page = max(1, (int) ($_GET['page'] ?? 1));
+$offset = ($page - 1) * $perPage;
+
+// Total count of published posts
+$totalStmt = $db->query("SELECT COUNT(*) FROM blog_posts WHERE status = 'published'");
+$totalPosts = (int) $totalStmt->fetchColumn();
+$totalPages = max(1, ceil($totalPosts / $perPage));
+
+// Featured post (most recent featured)
+$featuredStmt = $db->query("
+    SELECT p.*, c.name as category_name 
+    FROM blog_posts p 
+    LEFT JOIN blog_categories c ON p.category_id = c.id 
+    WHERE p.status = 'published' AND p.is_featured = 1 
+    ORDER BY p.created_at DESC 
+    LIMIT 1
+");
+$featuredPost = $featuredStmt->fetch();
+
+// Regular posts (exclude featured if on page 1)
+$excludeId = ($page === 1 && $featuredPost) ? $featuredPost['id'] : 0;
+$postsStmt = $db->prepare("
+    SELECT p.*, c.name as category_name 
+    FROM blog_posts p 
+    LEFT JOIN blog_categories c ON p.category_id = c.id 
+    WHERE p.status = 'published' AND p.id != ?
+    ORDER BY p.created_at DESC 
+    LIMIT ? OFFSET ?
+");
+$postsStmt->execute([$excludeId, $perPage, $offset]);
+$posts = $postsStmt->fetchAll();
+
+// Categories with counts
+$catStmt = $db->query("
+    SELECT c.name, c.slug, COUNT(p.id) as post_count 
+    FROM blog_categories c 
+    LEFT JOIN blog_posts p ON p.category_id = c.id AND p.status = 'published'
+    GROUP BY c.id, c.name, c.slug
+    HAVING post_count > 0
+    ORDER BY c.name
+");
+$categories = $catStmt->fetchAll();
+
+// Recent posts for sidebar
+$recentStmt = $db->query("
+    SELECT title, slug, image_path, created_at 
+    FROM blog_posts 
+    WHERE status = 'published' 
+    ORDER BY created_at DESC 
+    LIMIT 3
+");
+$recentPosts = $recentStmt->fetchAll();
+
+// Helper: format date in Spanish
+function formatDateEs($dateStr) {
+    $months = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    $ts = strtotime($dateStr);
+    $day = date('d', $ts);
+    $month = $months[(int)date('n', $ts) - 1];
+    $year = date('Y', $ts);
+    return "$day $month $year";
+}
+
+function shortDate($dateStr) {
+    $months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    $ts = strtotime($dateStr);
+    return date('d', $ts) . ' ' . $months[(int)date('n', $ts) - 1] . ' ' . date('Y', $ts);
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -34,103 +110,60 @@
             <!-- Blog Posts Grid -->
             <div class="blog-posts">
 
+                <?php if ($page === 1 && $featuredPost): ?>
                 <!-- Featured Post -->
                 <article class="blog-post featured-post">
                     <div class="post-image">
-                        <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=400&fit=crop&crop=center" alt="Post destacado">
+                        <?php if ($featuredPost['image_path']): ?>
+                            <img src="<?= htmlspecialchars($featuredPost['image_path']) ?>" alt="<?= htmlspecialchars($featuredPost['title']) ?>">
+                        <?php else: ?>
+                            <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=400&fit=crop&crop=center" alt="Post destacado">
+                        <?php endif; ?>
                         <div class="post-category">Destacado</div>
                     </div>
                     <div class="post-content">
                         <div class="post-meta">
-                            <span class="post-date">25 Octubre 2025</span>
-                            <span class="post-author">Por IBM FinTech</span>
+                            <span class="post-date"><?= formatDateEs($featuredPost['created_at']) ?></span>
+                            <span class="post-author">Por <?= htmlspecialchars($featuredPost['author']) ?></span>
                         </div>
-                        <h2><a href="post.html">Cómo las inversiones digitales están revolucionando las finanzas en Perú</a></h2>
-                        <p>El panorama financiero peruano está experimentando una transformación sin precedentes. Las inversiones digitales no solo ofrecen mejores rendimientos, sino que también democratizan el acceso a oportunidades de crecimiento antes reservadas para grandes capitales...</p>
-                        <a href="post.html" class="read-more">Leer más →</a>
+                        <h2><a href="blog/<?= htmlspecialchars($featuredPost['slug']) ?>.html"><?= htmlspecialchars($featuredPost['title']) ?></a></h2>
+                        <p><?= htmlspecialchars($featuredPost['excerpt']) ?></p>
+                        <a href="blog/<?= htmlspecialchars($featuredPost['slug']) ?>.html" class="read-more">Leer más →</a>
                     </div>
                 </article>
+                <?php endif; ?>
+
+                <?php if (empty($posts) && !$featuredPost): ?>
+                    <div style="text-align:center; padding:60px 20px; color:#6c757d;">
+                        <h3>No hay artículos publicados aún</h3>
+                        <p>Pronto tendremos contenido nuevo para ti.</p>
+                    </div>
+                <?php endif; ?>
 
                 <!-- Regular Posts -->
+                <?php foreach ($posts as $post): ?>
                 <article class="blog-post">
                     <div class="post-image">
-                        <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=250&fit=crop&crop=center" alt="Inflación vs inversiones">
-                        <div class="post-category">Educación Financiera</div>
+                        <?php if ($post['image_path']): ?>
+                            <img src="<?= htmlspecialchars($post['image_path']) ?>" alt="<?= htmlspecialchars($post['title']) ?>">
+                        <?php else: ?>
+                            <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=250&fit=crop&crop=center" alt="<?= htmlspecialchars($post['title']) ?>">
+                        <?php endif; ?>
+                        <?php if ($post['category_name']): ?>
+                            <div class="post-category"><?= htmlspecialchars($post['category_name']) ?></div>
+                        <?php endif; ?>
                     </div>
                     <div class="post-content">
                         <div class="post-meta">
-                            <span class="post-date">20 Octubre 2025</span>
-                            <span class="post-author">Por IBM FinTech</span>
+                            <span class="post-date"><?= formatDateEs($post['created_at']) ?></span>
+                            <span class="post-author">Por <?= htmlspecialchars($post['author']) ?></span>
                         </div>
-                        <h3><a href="post.html">Inflación vs Inversiones: ¿Por qué ahorrar ya no es suficiente?</a></h3>
-                        <p>La inflación silenciosamente erosiona el poder adquisitivo de tus ahorros. Descubre cómo las inversiones inteligentes pueden proteger y hacer crecer tu patrimonio...</p>
-                        <a href="post.html" class="read-more">Leer más →</a>
+                        <h3><a href="blog/<?= htmlspecialchars($post['slug']) ?>.html"><?= htmlspecialchars($post['title']) ?></a></h3>
+                        <p><?= htmlspecialchars($post['excerpt']) ?></p>
+                        <a href="blog/<?= htmlspecialchars($post['slug']) ?>.html" class="read-more">Leer más →</a>
                     </div>
                 </article>
-
-                <article class="blog-post">
-                    <div class="post-image">
-                        <img src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=400&h=250&fit=crop&crop=center" alt="Contratos mutuos">
-                        <div class="post-category">Marco Legal</div>
-                    </div>
-                    <div class="post-content">
-                        <div class="post-meta">
-                            <span class="post-date">18 Octubre 2025</span>
-                            <span class="post-author">Por IBM FinTech</span>
-                        </div>
-                        <h3><a href="post.html">Contratos Mutuos Dinerarios: Tu seguridad legal en inversiones</a></h3>
-                        <p>Entiende cómo los contratos mutuos dinerarios brindan seguridad jurídica a tus inversiones, respaldados por el Código Civil Peruano...</p>
-                        <a href="post.html" class="read-more">Leer más →</a>
-                    </div>
-                </article>
-
-                <article class="blog-post">
-                    <div class="post-image">
-                        <img src="https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=400&h=250&fit=crop&crop=center" alt="Criptoactivos">
-                        <div class="post-category">Tendencias</div>
-                    </div>
-                    <div class="post-content">
-                        <div class="post-meta">
-                            <span class="post-date">15 Octubre 2025</span>
-                            <span class="post-author">Por IBM FinTech</span>
-                        </div>
-                        <h3><a href="post.html">El futuro de los activos digitales en América Latina</a></h3>
-                        <p>Los activos digitales están redefiniendo el concepto de inversión en la región. Conoce las tendencias y oportunidades que se avecinan...</p>
-                        <a href="post.html" class="read-more">Leer más →</a>
-                    </div>
-                </article>
-
-                <article class="blog-post">
-                    <div class="post-image">
-                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&fit=crop&crop=center" alt="Planificación financiera">
-                        <div class="post-category">Estrategias</div>
-                    </div>
-                    <div class="post-content">
-                        <div class="post-meta">
-                            <span class="post-date">12 Octubre 2025</span>
-                            <span class="post-author">Por IBM FinTech</span>
-                        </div>
-                        <h3><a href="post.html">Planificación financiera: Cómo diversificar tu cartera de inversiones</a></h3>
-                        <p>Una estrategia de diversificación efectiva es clave para el éxito a largo plazo. Te mostramos cómo construir una cartera balanceada...</p>
-                        <a href="post.html" class="read-more">Leer más →</a>
-                    </div>
-                </article>
-
-                <article class="blog-post">
-                    <div class="post-image">
-                        <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400&h=250&fit=crop&crop=center" alt="Tecnología financiera">
-                        <div class="post-category">Tecnología</div>
-                    </div>
-                    <div class="post-content">
-                        <div class="post-meta">
-                            <span class="post-date">8 Octubre 2025</span>
-                            <span class="post-author">Por IBM FinTech</span>
-                        </div>
-                        <h3><a href="post.html">FinTech en Perú: La revolución tecnológica del sector financiero</a></h3>
-                        <p>Las empresas FinTech están transformando la manera en que los peruanos acceden a servicios financieros. Descubre esta revolución...</p>
-                        <a href="post.html" class="read-more">Leer más →</a>
-                    </div>
-                </article>
+                <?php endforeach; ?>
 
             </div>
 
@@ -151,71 +184,68 @@
                 </div>
 
                 <!-- Categories Widget -->
+                <?php if (!empty($categories)): ?>
                 <div class="sidebar-widget">
                     <h4>Categorías</h4>
                     <ul class="categories-list">
-                        <li><a href="#">Educación Financiera <span>(8)</span></a></li>
-                        <li><a href="#">Tendencias <span>(6)</span></a></li>
-                        <li><a href="#">Marco Legal <span>(4)</span></a></li>
-                        <li><a href="#">Estrategias <span>(7)</span></a></li>
-                        <li><a href="#">Tecnología <span>(5)</span></a></li>
-                        <li><a href="#">Análisis de Mercado <span>(3)</span></a></li>
+                        <?php foreach ($categories as $cat): ?>
+                        <li><a href="search.php?cat=<?= urlencode($cat['slug']) ?>"><?= htmlspecialchars($cat['name']) ?> <span>(<?= $cat['post_count'] ?>)</span></a></li>
+                        <?php endforeach; ?>
                     </ul>
                 </div>
+                <?php endif; ?>
 
                 <!-- Recent Posts Widget -->
+                <?php if (!empty($recentPosts)): ?>
                 <div class="sidebar-widget">
                     <h4>Artículos Recientes</h4>
                     <div class="recent-posts">
+                        <?php foreach ($recentPosts as $rp): ?>
                         <article class="recent-post">
-                            <img src="https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=80&h=60&fit=crop&crop=center" alt="Post reciente">
+                            <?php if ($rp['image_path']): ?>
+                                <img src="<?= htmlspecialchars($rp['image_path']) ?>" alt="<?= htmlspecialchars($rp['title']) ?>">
+                            <?php else: ?>
+                                <img src="https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=80&h=60&fit=crop&crop=center" alt="Post reciente">
+                            <?php endif; ?>
                             <div class="recent-post-content">
-                                <h5><a href="#">Cómo maximizar tus rendimientos en 2025</a></h5>
-                                <span class="recent-date">2 Oct 2025</span>
+                                <h5><a href="blog/<?= htmlspecialchars($rp['slug']) ?>.html"><?= htmlspecialchars($rp['title']) ?></a></h5>
+                                <span class="recent-date"><?= shortDate($rp['created_at']) ?></span>
                             </div>
                         </article>
-                        <article class="recent-post">
-                            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=80&h=60&fit=crop&crop=center" alt="Post reciente">
-                            <div class="recent-post-content">
-                                <h5><a href="#">Nuevas regulaciones para FinTech</a></h5>
-                                <span class="recent-date">30 Sep 2025</span>
-                            </div>
-                        </article>
-                        <article class="recent-post">
-                            <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=80&h=60&fit=crop&crop=center" alt="Post reciente">
-                            <div class="recent-post-content">
-                                <h5><a href="#">Inversiones sostenibles: El futuro</a></h5>
-                                <span class="recent-date">28 Sep 2025</span>
-                            </div>
-                        </article>
+                        <?php endforeach; ?>
                     </div>
                 </div>
-
-                <!-- Newsletter Widget -->
-                <div class="sidebar-widget newsletter-widget">
-                    <h4>Suscríbete a nuestro newsletter</h4>
-                    <p>Recibe insights financieros directamente en tu email</p>
-                    <form class="newsletter-form">
-                        <input type="email" placeholder="Tu email" required>
-                        <button type="submit" class="btn-newsletter">Suscribirse</button>
-                    </form>
-                </div>
+                <?php endif; ?>
 
             </aside>
         </div>
 
         <!-- Pagination -->
+        <?php if ($totalPages > 1): ?>
         <div class="blog-pagination">
-            <button class="pagination-btn prev disabled">← Anterior</button>
+            <?php if ($page > 1): ?>
+                <a href="blog.html?page=<?= $page - 1 ?>" class="pagination-btn prev">← Anterior</a>
+            <?php else: ?>
+                <button class="pagination-btn prev disabled" disabled>← Anterior</button>
+            <?php endif; ?>
+
             <div class="pagination-numbers">
-                <button class="pagination-number active">1</button>
-                <button class="pagination-number">2</button>
-                <button class="pagination-number">3</button>
-                <span class="pagination-dots">...</span>
-                <button class="pagination-number">8</button>
+                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                    <?php if ($i === $page): ?>
+                        <button class="pagination-number active"><?= $i ?></button>
+                    <?php else: ?>
+                        <a href="blog.html?page=<?= $i ?>" class="pagination-number"><?= $i ?></a>
+                    <?php endif; ?>
+                <?php endfor; ?>
             </div>
-            <button class="pagination-btn next">Siguiente →</button>
+
+            <?php if ($page < $totalPages): ?>
+                <a href="blog.html?page=<?= $page + 1 ?>" class="pagination-btn next">Siguiente →</a>
+            <?php else: ?>
+                <button class="pagination-btn next disabled" disabled>Siguiente →</button>
+            <?php endif; ?>
         </div>
+        <?php endif; ?>
 
     </div>
 </main>
@@ -265,13 +295,7 @@
 
         // Search form
         document.querySelector('.search-form')?.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const query = this.querySelector('input[name="q"]').value.trim();
-
-            if (query) {
-                // Redirect to search page with query parameter
-                window.location.href = `search.php?q=${encodeURIComponent(query)}`;
-            }
+            // Let the form submit naturally to search.php
         });
 
         // Newsletter form
@@ -279,7 +303,6 @@
             e.preventDefault();
             const email = this.querySelector('input').value;
             console.log('Suscribiendo email:', email);
-            // Aquí implementarías la lógica de suscripción
             alert('¡Gracias por suscribirte!');
             this.reset();
         });

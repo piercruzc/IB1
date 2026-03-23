@@ -1,0 +1,15 @@
+# Disable PHP execution in uploads directory
+<FilesMatch "\.ph(p[3457]?|t|tml)$">
+    Require all denied
+</FilesMatch>
+
+# Only serve image files
+<FilesMatch "\.(?i)(jpe?g|png|gif|webp|svg)$">
+    Require all granted
+</FilesMatch>
+
+# Prevent directory listing
+Options -Indexes
+
+# Prevent script execution
+php_flag engine off

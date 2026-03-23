@@ -1,3 +1,77 @@
+<?php
+require_once __DIR__ . '/includes/db.php';
+
+$db = getDB();
+
+$query = trim($_GET['q'] ?? '');
+$catFilter = trim($_GET['cat'] ?? '');
+$page = max(1, (int) ($_GET['page'] ?? 1));
+$perPage = 9;
+$offset = ($page - 1) * $perPage;
+
+$results = [];
+$totalResults = 0;
+
+// Build the search query
+$whereClause = "WHERE p.status = 'published'";
+$params = [];
+
+if ($query) {
+    $whereClause .= " AND (p.title LIKE ? OR p.excerpt LIKE ? OR p.content LIKE ?)";
+    $searchTerm = '%' . $query . '%';
+    $params[] = $searchTerm;
+    $params[] = $searchTerm;
+    $params[] = $searchTerm;
+}
+
+if ($catFilter) {
+    $whereClause .= " AND c.slug = ?";
+    $params[] = $catFilter;
+}
+
+// Count total
+$countSql = "SELECT COUNT(*) FROM blog_posts p LEFT JOIN blog_categories c ON p.category_id = c.id $whereClause";
+$countStmt = $db->prepare($countSql);
+$countStmt->execute($params);
+$totalResults = (int) $countStmt->fetchColumn();
+$totalPages = max(1, ceil($totalResults / $perPage));
+
+// Fetch results
+$sql = "
+    SELECT p.*, c.name as category_name, c.slug as category_slug
+    FROM blog_posts p 
+    LEFT JOIN blog_categories c ON p.category_id = c.id 
+    $whereClause
+    ORDER BY p.created_at DESC 
+    LIMIT $perPage OFFSET $offset
+";
+$stmt = $db->prepare($sql);
+$stmt->execute($params);
+$results = $stmt->fetchAll();
+
+// Get category name for filter display
+$catName = '';
+if ($catFilter) {
+    $catStmt = $db->prepare("SELECT name FROM blog_categories WHERE slug = ?");
+    $catStmt->execute([$catFilter]);
+    $catName = $catStmt->fetchColumn() ?: $catFilter;
+}
+
+// Categories for filter dropdown
+$allCats = $db->query("SELECT name, slug FROM blog_categories ORDER BY name")->fetchAll();
+
+// Helper
+function formatDateSearch($dateStr) {
+    $months = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    $ts = strtotime($dateStr);
+    return date('d', $ts) . ' ' . $months[(int)date('n', $ts) - 1] . ' ' . date('Y', $ts);
+}
+
+// Build query string for pagination
+function buildSearchUrl($params) {
+    return 'search.php?' . http_build_query($params);
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -22,8 +96,18 @@
             <div class="search-hero-content">
                 <h1>Resultados de búsqueda</h1>
                 <div class="search-info">
-                    <p>Resultados para: <span class="search-query">"inversiones"</span></p>
-                    <p class="search-stats">Encontramos <strong>12 artículos</strong> relacionados</p>
+                    <?php if ($query): ?>
+                        <p>Resultados para: <span class="search-query">"<?= htmlspecialchars($query) ?>"</span></p>
+                    <?php elseif ($catName): ?>
+                        <p>Categoría: <span class="search-query">"<?= htmlspecialchars($catName) ?>"</span></p>
+                    <?php endif; ?>
+                    <p class="search-stats">
+                        <?php if ($totalResults > 0): ?>
+                            Encontramos <strong><?= $totalResults ?> artículo<?= $totalResults !== 1 ? 's' : '' ?></strong> relacionados
+                        <?php else: ?>
+                            No se encontraron resultados
+                        <?php endif; ?>
+                    </p>
                 </div>
             </div>
         </div>
@@ -35,199 +119,96 @@
 
             <!-- Search Bar Top -->
             <div class="search-bar-top">
-                <form class="search-form-main">
-                    <input type="text" placeholder="Buscar artículos..." value="inversiones" required>
+                <form class="search-form-main" method="GET" action="search.php">
+                    <input type="text" name="q" placeholder="Buscar artículos..." value="<?= htmlspecialchars($query) ?>" required>
+                    <?php if ($catFilter): ?>
+                        <input type="hidden" name="cat" value="<?= htmlspecialchars($catFilter) ?>">
+                    <?php endif; ?>
                     <button type="submit">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                            <path
-                                d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z"
-                                stroke="currentColor" stroke-width="2" />
+                            <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="currentColor" stroke-width="2" />
                         </svg>
                     </button>
                 </form>
                 <div class="search-filters">
                     <span>Filtrar por:</span>
-                    <select class="filter-category">
-                        <option value="">Todas las categorías</option>
-                        <option value="educacion">Educación Financiera</option>
-                        <option value="tendencias">Tendencias</option>
-                        <option value="legal">Marco Legal</option>
-                        <option value="estrategias">Estrategias</option>
-                        <option value="tecnologia">Tecnología</option>
-                    </select>
-                    <select class="filter-date">
-                        <option value="">Cualquier fecha</option>
-                        <option value="week">Última semana</option>
-                        <option value="month">Último mes</option>
-                        <option value="year">Último año</option>
-                    </select>
+                    <form method="GET" action="search.php" id="filterForm">
+                        <input type="hidden" name="q" value="<?= htmlspecialchars($query) ?>">
+                        <select class="filter-category" name="cat" onchange="document.getElementById('filterForm').submit();">
+                            <option value="">Todas las categorías</option>
+                            <?php foreach ($allCats as $cat): ?>
+                                <option value="<?= htmlspecialchars($cat['slug']) ?>" <?= $catFilter === $cat['slug'] ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($cat['name']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </form>
                 </div>
             </div>
 
+            <?php if (!empty($results)): ?>
             <!-- Results Grid -->
             <div class="results-grid">
-
-                <!-- Search Result Item -->
+                <?php foreach ($results as $result): ?>
                 <article class="search-result-card">
                     <div class="result-image">
-                        <img src="https://picsum.photos/400/250?random=1" alt="Resultado 1">
-                        <div class="result-category">Educación Financiera</div>
+                        <?php if ($result['image_path']): ?>
+                            <img src="<?= htmlspecialchars($result['image_path']) ?>" alt="<?= htmlspecialchars($result['title']) ?>">
+                        <?php else: ?>
+                            <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=250&fit=crop&crop=center" alt="<?= htmlspecialchars($result['title']) ?>">
+                        <?php endif; ?>
+                        <?php if ($result['category_name']): ?>
+                            <div class="result-category"><?= htmlspecialchars($result['category_name']) ?></div>
+                        <?php endif; ?>
                     </div>
                     <div class="result-content">
                         <div class="result-meta">
-                            <span class="result-date">25 Septiembre 2025</span>
-                            <span class="result-author">Por IBM FinTech</span>
+                            <span class="result-date"><?= formatDateSearch($result['created_at']) ?></span>
+                            <span class="result-author">Por <?= htmlspecialchars($result['author']) ?></span>
                         </div>
-                        <h3><a href="post.html">Cómo las inversiones digitales están revolucionando las finanzas en
-                                Perú</a></h3>
-                        <p>El panorama financiero peruano está experimentando una transformación sin precedentes. Las
-                            inversiones digitales no solo ofrecen mejores rendimientos, sino que también democratizan el
-                            acceso...</p>
-                        <a href="post.html" class="result-read-more">Leer más →</a>
+                        <h3><a href="blog/<?= htmlspecialchars($result['slug']) ?>.html"><?= htmlspecialchars($result['title']) ?></a></h3>
+                        <p><?= htmlspecialchars($result['excerpt']) ?></p>
+                        <a href="blog/<?= htmlspecialchars($result['slug']) ?>.html" class="result-read-more">Leer más →</a>
                     </div>
                 </article>
-
-                <article class="search-result-card">
-                    <div class="result-image">
-                        <img src="https://picsum.photos/400/250?random=2" alt="Resultado 2">
-                        <div class="result-category">Estrategias</div>
-                    </div>
-                    <div class="result-content">
-                        <div class="result-meta">
-                            <span class="result-date">20 Septiembre 2025</span>
-                            <span class="result-author">Por IBM FinTech</span>
-                        </div>
-                        <h3><a href="post.html">Planificación financiera: Cómo diversificar tu cartera de
-                                inversiones</a></h3>
-                        <p>Una estrategia de diversificación efectiva es clave para el éxito a largo plazo. Te mostramos
-                            cómo construir una cartera balanceada de inversiones que maximice tus rendimientos...</p>
-                        <a href="post.html" class="result-read-more">Leer más →</a>
-                    </div>
-                </article>
-
-                <article class="search-result-card">
-                    <div class="result-image">
-                        <img src="https://picsum.photos/400/250?random=3" alt="Resultado 3">
-                        <div class="result-category">Tendencias</div>
-                    </div>
-                    <div class="result-content">
-                        <div class="result-meta">
-                            <span class="result-date">18 Septiembre 2025</span>
-                            <span class="result-author">Por IBM FinTech</span>
-                        </div>
-                        <h3><a href="post.html">Los mejores tipos de inversiones para principiantes en 2025</a></h3>
-                        <p>Si estás empezando en el mundo de las inversiones, es crucial conocer las opciones
-                            disponibles. Analizamos las mejores alternativas para inversionistas novatos...</p>
-                        <a href="post.html" class="result-read-more">Leer más →</a>
-                    </div>
-                </article>
-
-                <article class="search-result-card">
-                    <div class="result-image">
-                        <img src="https://picsum.photos/400/250?random=4" alt="Resultado 4">
-                        <div class="result-category">Marco Legal</div>
-                    </div>
-                    <div class="result-content">
-                        <div class="result-meta">
-                            <span class="result-date">15 Septiembre 2025</span>
-                            <span class="result-author">Por IBM FinTech</span>
-                        </div>
-                        <h3><a href="post.html">Aspectos legales de las inversiones en activos digitales</a></h3>
-                        <p>Conocer el marco legal que rodea las inversiones en criptoactivos es fundamental para tomar
-                            decisiones informadas. Te explicamos todo lo que necesitas saber...</p>
-                        <a href="post.html" class="result-read-more">Leer más →</a>
-                    </div>
-                </article>
-
-                <article class="search-result-card">
-                    <div class="result-image">
-                        <img src="https://picsum.photos/400/250?random=5" alt="Resultado 5">
-                        <div class="result-category">Educación Financiera</div>
-                    </div>
-                    <div class="result-content">
-                        <div class="result-meta">
-                            <span class="result-date">12 Septiembre 2025</span>
-                            <span class="result-author">Por IBM FinTech</span>
-                        </div>
-                        <h3><a href="post.html">Errores comunes en inversiones y cómo evitarlos</a></h3>
-                        <p>Muchos inversionistas cometen errores que podrían haberse evitado con la información
-                            correcta. Conoce los errores más frecuentes en inversiones y aprende a prevenirlos...</p>
-                        <a href="post.html" class="result-read-more">Leer más →</a>
-                    </div>
-                </article>
-
-                <article class="search-result-card">
-                    <div class="result-image">
-                        <img src="https://picsum.photos/400/250?random=6" alt="Resultado 6">
-                        <div class="result-category">Tecnología</div>
-                    </div>
-                    <div class="result-content">
-                        <div class="result-meta">
-                            <span class="result-date">10 Septiembre 2025</span>
-                            <span class="result-author">Por IBM FinTech</span>
-                        </div>
-                        <h3><a href="post.html">Tecnología blockchain y su impacto en las inversiones</a></h3>
-                        <p>La tecnología blockchain está revolucionando la forma en que realizamos inversiones. Descubre
-                            cómo esta innovación está cambiando el panorama financiero...</p>
-                        <a href="post.html" class="result-read-more">Leer más →</a>
-                    </div>
-                </article>
-
-                <article class="search-result-card">
-                    <div class="result-image">
-                        <img src="https://picsum.photos/400/250?random=7" alt="Resultado 7">
-                        <div class="result-category">Estrategias</div>
-                    </div>
-                    <div class="result-content">
-                        <div class="result-meta">
-                            <span class="result-date">8 Septiembre 2025</span>
-                            <span class="result-author">Por IBM FinTech</span>
-                        </div>
-                        <h3><a href="post.html">Cómo crear un portafolio de inversiones equilibrado</a></h3>
-                        <p>Construir un portafolio equilibrado es esencial para maximizar rendimientos y minimizar
-                            riesgos. Te mostramos las mejores prácticas para lograrlo...</p>
-                        <a href="post.html" class="result-read-more">Leer más →</a>
-                    </div>
-                </article>
-
-                <article class="search-result-card">
-                    <div class="result-image">
-                        <img src="https://picsum.photos/400/250?random=8" alt="Resultado 8">
-                        <div class="result-category">Tendencias</div>
-                    </div>
-                    <div class="result-content">
-                        <div class="result-meta">
-                            <span class="result-date">5 Septiembre 2025</span>
-                            <span class="result-author">Por IBM FinTech</span>
-                        </div>
-                        <h3><a href="post.html">El futuro de las inversiones sostenibles en América Latina</a></h3>
-                        <p>Las inversiones ESG están ganando terreno en la región. Analizamos las oportunidades y
-                            desafíos de invertir de manera sostenible en América Latina...</p>
-                        <a href="post.html" class="result-read-more">Leer más →</a>
-                    </div>
-                </article>
-
-                <article class="search-result-card">
-                    <div class="result-image">
-                        <img src="https://picsum.photos/400/250?random=9" alt="Resultado 9">
-                        <div class="result-category">Educación Financiera</div>
-                    </div>
-                    <div class="result-content">
-                        <div class="result-meta">
-                            <span class="result-date">3 Septiembre 2025</span>
-                            <span class="result-author">Por IBM FinTech</span>
-                        </div>
-                        <h3><a href="post.html">Guía completa para entender los rendimientos de inversión</a></h3>
-                        <p>Comprender cómo funcionan los rendimientos es fundamental para tomar decisiones de inversión
-                            informadas. Esta guía te explica todo lo que necesitas saber...</p>
-                        <a href="post.html" class="result-read-more">Leer más →</a>
-                    </div>
-                </article>
-
+                <?php endforeach; ?>
             </div>
 
-            <!-- No Results Message (Hidden by default) -->
-            <div class="no-results" style="display: none;">
+            <!-- Search Pagination -->
+            <?php if ($totalPages > 1): ?>
+            <div class="search-pagination">
+                <?php
+                    $paginationParams = [];
+                    if ($query) $paginationParams['q'] = $query;
+                    if ($catFilter) $paginationParams['cat'] = $catFilter;
+                ?>
+                <?php if ($page > 1): ?>
+                    <a href="<?= buildSearchUrl(array_merge($paginationParams, ['page' => $page - 1])) ?>" class="pagination-btn prev">← Anterior</a>
+                <?php else: ?>
+                    <button class="pagination-btn prev disabled" disabled>← Anterior</button>
+                <?php endif; ?>
+                
+                <div class="pagination-numbers">
+                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                        <?php if ($i === $page): ?>
+                            <button class="pagination-number active"><?= $i ?></button>
+                        <?php else: ?>
+                            <a href="<?= buildSearchUrl(array_merge($paginationParams, ['page' => $i])) ?>" class="pagination-number"><?= $i ?></a>
+                        <?php endif; ?>
+                    <?php endfor; ?>
+                </div>
+                
+                <?php if ($page < $totalPages): ?>
+                    <a href="<?= buildSearchUrl(array_merge($paginationParams, ['page' => $page + 1])) ?>" class="pagination-btn next">Siguiente →</a>
+                <?php else: ?>
+                    <button class="pagination-btn next disabled" disabled>Siguiente →</button>
+                <?php endif; ?>
+            </div>
+            <?php endif; ?>
+
+            <?php else: ?>
+            <!-- No Results Message -->
+            <div class="no-results">
                 <div class="no-results-icon">🔍</div>
                 <h3>No encontramos resultados</h3>
                 <p>Lo sentimos, no encontramos artículos relacionados con tu búsqueda.</p>
@@ -242,17 +223,7 @@
                 </div>
                 <a href="blog.html" class="btn-back-blog">Ver todos los artículos</a>
             </div>
-
-            <!-- Search Pagination -->
-            <div class="search-pagination">
-                <button class="pagination-btn prev disabled">← Anterior</button>
-                <div class="pagination-numbers">
-                    <button class="pagination-number active">1</button>
-                    <button class="pagination-number">2</button>
-                    <button class="pagination-number">3</button>
-                </div>
-                <button class="pagination-btn next">Siguiente →</button>
-            </div>
+            <?php endif; ?>
 
         </div>
     </main>
@@ -304,55 +275,27 @@
             });
         }
 
-        // Main search form
-        document.querySelector('.search-form-main').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const query = this.querySelector('input').value;
-            console.log('Buscando:', query);
-            // Aquí implementarías la lógica de búsqueda
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdowns = document.querySelectorAll('.nav-dropdown');
+            dropdowns.forEach(dropdown => {
+                const toggle = dropdown.querySelector('.dropdown-toggle');
+                if (window.innerWidth <= 768) {
+                    toggle.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        dropdown.classList.toggle('active');
+                    });
+                    document.addEventListener('click', function(e) {
+                        if (!dropdown.contains(e.target)) {
+                            dropdown.classList.remove('active');
+                        }
+                    });
+                }
+            });
+
+            window.addEventListener('resize', function() {
+                document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('active'));
+            });
         });
-
-        // Filter changes
-        document.querySelector('.filter-category').addEventListener('change', function () {
-            console.log('Filtro categoría:', this.value);
-            // Aquí implementarías el filtrado por categoría
-        });
-
-        document.querySelector('.filter-date').addEventListener('change', function () {
-            console.log('Filtro fecha:', this.value);
-            // Aquí implementarías el filtrado por fecha
-        });
-
-        // Get search query from URL
-        function getSearchQuery() {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get('q') || '';
-        }
-
-        // Update search query display
-        // Update search query display
-        document.addEventListener('DOMContentLoaded', function () {
-            const query = getSearchQuery();
-
-            if (query) {
-                document.querySelector('.search-query').textContent = `"${query}"`;
-                document.querySelector('.search-form-main input').value = query;
-                // Aquí podrías hacer una búsqueda real con el término
-                performSearch(query);
-            } else {
-                // Si no hay query, mostrar mensaje por defecto
-                document.querySelector('.search-query').textContent = '""';
-                document.querySelector('.search-stats').innerHTML = 'Ingresa un término para buscar';
-            }
-        });
-
-        // Function to perform actual search (placeholder)
-        function performSearch(query) {
-            console.log('Realizando búsqueda para:', query);
-            // Aquí implementarías la lógica real de búsqueda
-            // Por ejemplo: filtrar resultados, llamar API, etc.
-        }
-
     </script>
 </body>
 

@@ -1,286 +1,194 @@
+<?php
+require_once __DIR__ . '/includes/db.php';
+
+$db = getDB();
+$slug = $_GET['slug'] ?? '';
+
+if (!$slug) {
+    header('HTTP/1.0 404 Not Found');
+    header('Location: blog.html');
+    exit;
+}
+
+// Fetch the post
+$stmt = $db->prepare("
+    SELECT p.*, c.name as category_name, c.slug as category_slug
+    FROM blog_posts p 
+    LEFT JOIN blog_categories c ON p.category_id = c.id 
+    WHERE p.slug = ? AND p.status = 'published'
+");
+$stmt->execute([$slug]);
+$post = $stmt->fetch();
+
+if (!$post) {
+    header('HTTP/1.0 404 Not Found');
+    header('Location: blog.html');
+    exit;
+}
+
+// Previous post
+$prevStmt = $db->prepare("
+    SELECT title, slug FROM blog_posts 
+    WHERE status = 'published' AND created_at < ? 
+    ORDER BY created_at DESC LIMIT 1
+");
+$prevStmt->execute([$post['created_at']]);
+$prevPost = $prevStmt->fetch();
+
+// Next post
+$nextStmt = $db->prepare("
+    SELECT title, slug FROM blog_posts 
+    WHERE status = 'published' AND created_at > ? 
+    ORDER BY created_at ASC LIMIT 1
+");
+$nextStmt->execute([$post['created_at']]);
+$nextPost = $nextStmt->fetch();
+
+// Format date
+function formatDateEsFull($dateStr) {
+    $months = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    $ts = strtotime($dateStr);
+    return date('d', $ts) . ' de ' . $months[(int)date('n', $ts) - 1] . ', ' . date('Y', $ts);
+}
+
+// Reading time estimate
+$wordCount = str_word_count(strip_tags($post['content']));
+$readTime = max(1, ceil($wordCount / 200));
+
+// Load author settings
+$settingsStmt = $db->query("SELECT setting_key, setting_value FROM blog_settings");
+$authorSettings = [];
+while ($row = $settingsStmt->fetch()) {
+    $authorSettings[$row['setting_key']] = $row['setting_value'];
+}
+
+$aName = htmlspecialchars($authorSettings['author_name'] ?? 'IB1 Fintech');
+$aBio = htmlspecialchars($authorSettings['author_bio'] ?? '');
+$aAvatar = !empty($authorSettings['author_avatar']) ? htmlspecialchars($authorSettings['author_avatar']) : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&h=120&fit=crop&crop=center';
+$aFb = $authorSettings['author_facebook'] ?? '';
+$aIg = $authorSettings['author_instagram'] ?? '';
+$aLi = $authorSettings['author_linkedin'] ?? '';
+
+$heroImage = $post['image_path'] ?: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1600&h=600&fit=crop&crop=center';
+?>
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cómo las inversiones digitales están revolucionando las finanzas en Perú - IBM FINTECH</title>
-    <meta name="description"
-          content="El panorama financiero peruano está experimentando una transformación sin precedentes con las inversiones digitales.">
-    <link rel="stylesheet" href="css/main.css">
+    <title><?= htmlspecialchars($post['title']) ?> - IBM FINTECH</title>
+    <meta name="description" content="<?= htmlspecialchars($post['excerpt']) ?>">
+    <base href="/">
+    <link rel="stylesheet" href="css/main.css?v=<?= time() ?>">
     <link rel="icon" type="image/png" href="img/favicon.png">
 </head>
 
 <body>
-<!-- Header -->
-<header class="blog-header">
-    <!-- Navbar con nueva estructura -->
-    <?php include 'includes/navbar.php'; ?>
-</header>
-
-<!-- Post Main Content -->
-<main class="post-main">
+<!-- ===== POST HERO ===== -->
+<section class="post-hero" style="background-image: url('<?= htmlspecialchars($heroImage) ?>');">
+    <div class="post-hero-overlay"></div>
+    <!-- Navbar -->
+    <header class="post-hero-header">
+        <?php include 'includes/navbar.php'; ?>
+    </header>
     <div class="container">
+        <div class="post-hero-content">
+            <?php if ($post['category_name']): ?>
+            <span class="post-hero-category"><?= htmlspecialchars($post['category_name']) ?></span>
+            <?php endif; ?>
 
-        <!-- Breadcrumb -->
-        <nav class="breadcrumb">
-            <a href="index.html">Inicio</a>
-            <span class="breadcrumb-separator">›</span>
-            <a href="blog.html">Blog</a>
-            <span class="breadcrumb-separator">›</span>
-            <span class="breadcrumb-current">Inversiones digitales en Perú</span>
-        </nav>
+            <h1 class="post-hero-title"><?= htmlspecialchars($post['title']) ?></h1>
 
-        <!-- Post Content - ANCHO COMPLETO -->
-        <article class="post-content-full">
+            <div class="post-hero-stats">
+                <span class="stat-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <?= $readTime ?> min de lectura
+                </span>
+            </div>
+        </div>
+    </div>
+</section>
 
-            <!-- Post Header -->
-            <header class="post-header">
-                <div class="post-category-badge">Educación Financiera</div>
+<!-- ===== POST BODY ===== -->
+<main class="post-main-v2">
+    <div class="container">
+        <article class="post-article-v2">
 
-                <h1 class="post-title">Cómo las inversiones digitales están revolucionando las finanzas en Perú</h1>
-
-                <div class="post-meta">
-                    <div class="post-author-info">
-                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=center" alt="IBM FinTech" class="author-avatar">
-                        <div class="author-details">
-                            <span class="author-name">Por IBM FinTech</span>
-                            <time class="post-date" datetime="2025-10-25">25 de Octubre, 2025</time>
-                        </div>
+            <!-- Breadcrumb + Author -->
+            <div class="post-article-header">
+                <nav class="post-breadcrumb-v2">
+                    <a href="index.html">Inicio</a>
+                    <span>›</span>
+                    <a href="blog.html">Blog</a>
+                    <span>›</span>
+                    <span class="current"><?= htmlspecialchars(mb_substr($post['title'], 0, 50, 'UTF-8')) ?>...</span>
+                </nav>
+                <div class="post-author-bar">
+                    <img src="<?= $aAvatar ?>" alt="<?= $aName ?>" class="author-bar-avatar">
+                    <div class="author-bar-info">
+                        <span class="author-bar-name">Por <?= $aName ?></span>
+                        <time class="author-bar-date" datetime="<?= date('Y-m-d', strtotime($post['created_at'])) ?>"><?= formatDateEsFull($post['created_at']) ?></time>
                     </div>
-                </div>
-            </header>
-
-            <!-- Featured Image -->
-            <div class="post-featured-image">
-                <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1200&h=500&fit=crop&crop=center" alt="Inversiones digitales en Perú">
-                <div class="image-caption">
-                    Las inversiones digitales están transformando el panorama financiero peruano
                 </div>
             </div>
 
-            <!-- Post Body -->
-            <div class="post-body">
-
-                <!-- Intro -->
-                <div class="post-intro">
-                    <p>El panorama financiero peruano está experimentando una transformación sin precedentes. Las
-                        inversiones digitales no solo ofrecen mejores rendimientos, sino que también democratizan el
-                        acceso a oportunidades de crecimiento antes reservadas para grandes capitales.</p>
-                </div>
-
-                <!-- Content -->
-                <h2>El cambio de paradigma financiero</h2>
-
-                <p>Durante décadas, los peruanos han dependido de métodos tradicionales de ahorro e inversión:
-                    cuentas de ahorro con intereses mínimos, depósitos a plazo fijo que apenas superan la inflación,
-                    y fondos mutuos con comisiones elevadas que erosionan los rendimientos.</p>
-
-                <p>Sin embargo, la llegada de las tecnologías financieras (FinTech) ha abierto un nuevo horizonte de
-                    posibilidades. Las <strong>inversiones digitales</strong> representan una alternativa innovadora
-                    que combina tecnología avanzada, transparencia y rendimientos superiores.</p>
-
-                <blockquote class="post-quote">
-                    "Las inversiones digitales no son solo una tendencia, son el futuro de las finanzas personales
-                    en América Latina. Estamos democratizando el acceso a oportunidades que antes estaban reservadas
-                    para unos pocos."
-                </blockquote>
-
-                <h2>Ventajas de las inversiones digitales</h2>
-
-                <p>Las inversiones digitales ofrecen múltiples beneficios que las distinguen de los métodos
-                    tradicionales:</p>
-
-                <h3>1. Accesibilidad sin barreras</h3>
-                <p>A diferencia de las inversiones tradicionales que requieren montos mínimos elevados, las
-                    plataformas digitales permiten comenzar con capitales pequeños. En IBM FinTech, por ejemplo,
-                    puedes iniciar tu portafolio de inversiones desde solo S/ 500.</p>
-
-                <div class="info-box">
-                    <div class="info-icon">💡</div>
-                    <div class="info-content">
-                        <h4>¿Sabías que?</h4>
-                        <p>El 73% de los peruanos nunca había tenido acceso a productos de inversión antes de la
-                            llegada de las plataformas digitales.</p>
-                    </div>
-                </div>
-
-                <h3>2. Transparencia total</h3>
-                <p>Las plataformas digitales modernas operan bajo principios de transparencia absoluta. Los
-                    inversionistas reciben reportes detallados sobre el desempeño de sus inversiones, las
-                    estrategias utilizadas y los riesgos involucrados.</p>
-
-                <h3>3. Tecnología al servicio del inversor</h3>
-                <p>La tecnología blockchain, los algoritmos de gestión de riesgos y las herramientas de análisis
-                    predictivo permiten optimizar los rendimientos mientras se minimizan los riesgos.</p>
-
-                <h2>El marco legal en Perú</h2>
-
-                <p>Una de las principales preocupaciones de los inversionistas es la seguridad jurídica. En Perú,
-                    las inversiones digitales serias operan bajo el amparo de <strong>contratos mutuos
-                        dinerarios</strong>, respaldados por el Código Civil Peruano.</p>
-
-                <p>Estos contratos garantizan:</p>
-
-                <ul class="styled-list">
-                    <li>Protección legal del capital invertido</li>
-                    <li>Claridad en los términos y condiciones</li>
-                    <li>Respaldo jurídico en caso de disputas</li>
-                    <li>Transparencia en las obligaciones de ambas partes</li>
-                </ul>
-
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-number">15%</div>
-                        <div class="stat-label">Rendimiento anual promedio</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">85%</div>
-                        <div class="stat-label">Satisfacción del cliente</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">100%</div>
-                        <div class="stat-label">Transparencia en reportes</div>
-                    </div>
-                </div>
-
-                <h2>Casos de éxito en el mercado peruano</h2>
-
-                <p>Los resultados hablan por sí solos. En los últimos dos años, hemos visto casos extraordinarios de
-                    crecimiento patrimonial:</p>
-
-                <h3>Caso María: De S/ 5,000 a S/ 8,750</h3>
-                <p>María, una profesional de 32 años, decidió invertir S/ 5,000 en nuestro plan Nivel 2. Después de
-                    18 meses, su inversión creció a S/ 8,750, representando un rendimiento del 75% en menos de dos
-                    años.</p>
-
-                <h3>Caso Carlos: Diversificación inteligente</h3>
-                <p>Carlos distribuyó S/ 15,000 entre diferentes niveles de inversión. Su estrategia diversificada le
-                    permitió obtener rendimientos consistentes del 18% anual, superando por mucho las opciones
-                    bancarias tradicionales.</p>
-
-                <div class="warning-box">
-                    <div class="warning-icon">⚠️</div>
-                    <div class="warning-content">
-                        <h4>Importante recordar</h4>
-                        <p>Todas las inversiones conllevan riesgos. Es fundamental entender estos riesgos y nunca
-                            invertir dinero que no puedas permitirte perder. Siempre busca asesoría profesional
-                            antes de tomar decisiones de inversión.</p>
-                    </div>
-                </div>
-
-                <h2>El futuro de las inversiones en Perú</h2>
-
-                <p>El futuro se presenta prometedor para las inversiones digitales en Perú. Con una población cada
-                    vez más digitalizada y una creciente conciencia sobre la importancia de hacer crecer el
-                    patrimonio, las plataformas de inversión digital están posicionadas para liderar la
-                    transformación financiera del país.</p>
-
-                <p>Los próximos años traerán:</p>
-
-                <ul class="styled-list">
-                    <li>Mayor regulación que brinde más seguridad a los inversionistas</li>
-                    <li>Nuevos productos financieros digitales</li>
-                    <li>Integración con tecnologías emergentes como inteligencia artificial</li>
-                    <li>Expansión a mercados regionales</li>
-                </ul>
-
-                <h2>Conclusión</h2>
-
-                <p>Las inversiones digitales representan una oportunidad única para los peruanos de hacer crecer su
-                    patrimonio de manera inteligente y segura. Con la tecnología como aliada y un marco legal
-                    sólido, nunca ha sido mejor momento para diversificar las fuentes de ingresos y construir un
-                    futuro financiero próspero.</p>
-
-                <p>En IBM FinTech, estamos comprometidos con democratizar el acceso a inversiones de calidad,
-                    brindando transparencia, seguridad y rendimientos superiores a todos nuestros clientes.</p>
-
+            <!-- Post Content -->
+            <div class="post-body-v2">
+                <?= $post['content'] ?>
             </div>
 
-            <!-- Post Tags -->
-            <div class="post-tags">
-                <span class="tags-label">Etiquetas:</span>
-                <a href="#" class="tag">inversiones</a>
-                <a href="#" class="tag">fintech</a>
-                <a href="#" class="tag">perú</a>
-                <a href="#" class="tag">educación financiera</a>
-                <a href="#" class="tag">tecnología</a>
+            <!-- Category Tag -->
+            <?php if ($post['category_name']): ?>
+            <div class="post-tags-v2">
+                <span class="tags-icon">🏷️</span>
+                <a href="search.php?cat=<?= urlencode($post['category_slug']) ?>" class="tag-v2"><?= htmlspecialchars($post['category_name']) ?></a>
             </div>
-
-            <!-- Social Share -->
-            <div class="post-share">
-                <h4>Compartir este artículo</h4>
-                <div class="share-buttons">
-                    <a href="#" class="share-btn facebook" title="Compartir en Facebook">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path
-                                    d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                        </svg>
-                    </a>
-                    <a href="#" class="share-btn twitter" title="Compartir en Twitter">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path
-                                    d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
-                        </svg>
-                    </a>
-                    <a href="#" class="share-btn linkedin" title="Compartir en LinkedIn">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path
-                                    d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                        </svg>
-                    </a>
-                    <a href="#" class="share-btn whatsapp" title="Compartir en WhatsApp">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path
-                                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.465 3.30z"
-                                    fill="currentColor" />
-                        </svg>
-                    </a>
-                </div>
-            </div>
+            <?php endif; ?>
 
         </article>
 
-        <!-- Navigation Between Posts -->
-        <nav class="post-navigation">
-            <div class="nav-previous">
-                <a href="post-prev.html">
-                    <span class="nav-label">← Artículo anterior</span>
-                    <span class="nav-title">Inflación vs Inversiones: ¿Por qué ahorrar ya no es suficiente?</span>
-                </a>
-            </div>
-            <div class="nav-next">
-                <a href="post-next.html">
-                    <span class="nav-label">Siguiente artículo →</span>
-                    <span class="nav-title">Contratos Mutuos Dinerarios: Tu seguridad legal en inversiones</span>
-                </a>
-            </div>
+        <!-- Post Navigation -->
+        <nav class="post-nav-v2">
+            <?php if ($prevPost): ?>
+            <a href="blog/<?= htmlspecialchars($prevPost['slug']) ?>.html" class="post-nav-card prev">
+                <span class="nav-direction">← Anterior</span>
+                <span class="nav-post-title"><?= htmlspecialchars($prevPost['title']) ?></span>
+            </a>
+            <?php else: ?>
+            <div class="post-nav-card empty"></div>
+            <?php endif; ?>
+
+            <?php if ($nextPost): ?>
+            <a href="blog/<?= htmlspecialchars($nextPost['slug']) ?>.html" class="post-nav-card next">
+                <span class="nav-direction">Siguiente →</span>
+                <span class="nav-post-title"><?= htmlspecialchars($nextPost['title']) ?></span>
+            </a>
+            <?php endif; ?>
         </nav>
 
-        <!-- Author Section AL FINAL -->
-        <section class="post-author-section">
-            <div class="author-card-full">
-                <div class="author-avatar-large">
-                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&h=120&fit=crop&crop=center" alt="IBM FinTech">
-                </div>
-                <div class="author-content">
-                    <h3>IBM FinTech</h3>
-                    <p>Especialistas en inversiones digitales y asesoría financiera. Ayudamos a personas y empresas
-                        a hacer crecer su patrimonio de manera segura y transparente. Con años de experiencia en el
-                        mercado peruano, brindamos soluciones innovadoras que combinan tecnología avanzada y
-                        respaldo legal sólido.</p>
-                    <div class="author-social">
-                        <a href="https://www.facebook.com/share/1LfqRFXCco/" target="_blank"
-                           class="social-link">Facebook</a>
-                        <a href="https://www.instagram.com/ibm.fintech?igsh=Nmc1ajdibjNwc3g5" target="_blank"
-                           class="social-link">Instagram</a>
-                        <a href="https://www.linkedin.com/company/ibm-fintech" target="_blank"
-                           class="social-link">LinkedIn</a>
-                    </div>
+        <!-- Author Card -->
+        <section class="post-author-v2">
+            <div class="author-v2-avatar">
+                <img src="<?= $aAvatar ?>" alt="<?= $aName ?>">
+            </div>
+            <div class="author-v2-info">
+                <span class="author-v2-label">Escrito por</span>
+                <h3 class="author-v2-name"><?= $aName ?></h3>
+                <?php if ($aBio): ?><p class="author-v2-bio"><?= $aBio ?></p><?php endif; ?>
+                <div class="author-v2-social">
+                    <?php if ($aFb): ?><a href="<?= htmlspecialchars($aFb) ?>" target="_blank" class="social-v2-link" title="Facebook">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    </a><?php endif; ?>
+                    <?php if ($aIg): ?><a href="<?= htmlspecialchars($aIg) ?>" target="_blank" class="social-v2-link" title="Instagram">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                    </a><?php endif; ?>
+                    <?php if ($aLi): ?><a href="<?= htmlspecialchars($aLi) ?>" target="_blank" class="social-v2-link" title="LinkedIn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                    </a><?php endif; ?>
                 </div>
             </div>
         </section>
-
     </div>
 </main>
 
@@ -290,35 +198,82 @@
 <!-- Footer -->
 <?php include 'includes/footer.php'; ?>
 
+<!-- Image Lightbox Modal -->
+<div class="lightbox-overlay" id="lightbox">
+    <button class="lightbox-close" id="lightboxClose">&times;</button>
+    <img class="lightbox-img" id="lightboxImg" alt="">
+</div>
+
+<style>
+.lightbox-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    cursor: zoom-out;
+}
+.lightbox-overlay.active {
+    display: flex;
+}
+.lightbox-img {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+    animation: lbFadeIn 0.25s ease;
+}
+@keyframes lbFadeIn {
+    from { opacity: 0; transform: scale(0.92); }
+    to { opacity: 1; transform: scale(1); }
+}
+.lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2.5rem;
+    cursor: pointer;
+    line-height: 1;
+    z-index: 10000;
+    transition: transform 0.2s;
+}
+.lightbox-close:hover {
+    transform: scale(1.2);
+}
+.post-body-v2 img {
+    cursor: zoom-in;
+    transition: opacity 0.2s;
+}
+.post-body-v2 img:hover {
+    opacity: 0.85;
+}
+</style>
+
 <!-- Scripts -->
 <script>
-    // Hamburger Menu
     const hamburger = document.querySelector('.hamburger-blue');
     const navMenu = document.querySelector('.nav-menu-blue');
-
     if (hamburger && navMenu) {
         hamburger.addEventListener('click', function () {
             this.classList.toggle('active');
             navMenu.classList.toggle('active');
         });
     }
-
-    // Dropdown functionality para mobile
     document.addEventListener('DOMContentLoaded', function() {
         const dropdowns = document.querySelectorAll('.nav-dropdown');
-
         dropdowns.forEach(dropdown => {
             const toggle = dropdown.querySelector('.dropdown-toggle');
-            const menu = dropdown.querySelector('.dropdown-menu');
-
-            // Solo agregar click listener en mobile
             if (window.innerWidth <= 768) {
                 toggle.addEventListener('click', function(e) {
                     e.preventDefault();
                     dropdown.classList.toggle('active');
                 });
-
-                // Cerrar dropdown al hacer click fuera
                 document.addEventListener('click', function(e) {
                     if (!dropdown.contains(e.target)) {
                         dropdown.classList.remove('active');
@@ -326,38 +281,27 @@
                 });
             }
         });
-
-        // Social share functionality
-        document.querySelectorAll('.share-btn').forEach(button => {
-            button.addEventListener('click', function (e) {
-                e.preventDefault();
-                const url = encodeURIComponent(window.location.href);
-                const title = encodeURIComponent(document.title);
-
-                let shareUrl = '';
-
-                if (this.classList.contains('facebook')) {
-                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
-                } else if (this.classList.contains('twitter')) {
-                    shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${title}`;
-                } else if (this.classList.contains('linkedin')) {
-                    shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
-                } else if (this.classList.contains('whatsapp')) {
-                    shareUrl = `https://wa.me/?text=${title} ${url}`;
-                }
-
-                if (shareUrl) {
-                    window.open(shareUrl, '_blank', 'width=600,height=400');
-                }
-            });
+        window.addEventListener('resize', function() {
+            document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('active'));
         });
 
-        // Re-evaluar en resize
-        window.addEventListener('resize', function() {
-            const dropdowns = document.querySelectorAll('.nav-dropdown');
-            dropdowns.forEach(dropdown => {
-                dropdown.classList.remove('active');
+        // Lightbox
+        const lb = document.getElementById('lightbox');
+        const lbImg = document.getElementById('lightboxImg');
+        document.querySelectorAll('.post-body-v2 img').forEach(img => {
+            img.addEventListener('click', function() {
+                lbImg.src = this.src;
+                lb.classList.add('active');
             });
+        });
+        lb.addEventListener('click', function(e) {
+            if (e.target !== lbImg) lb.classList.remove('active');
+        });
+        document.getElementById('lightboxClose').addEventListener('click', function() {
+            lb.classList.remove('active');
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') lb.classList.remove('active');
         });
     });
 </script>
