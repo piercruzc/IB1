@@ -167,7 +167,7 @@ function buildSearchUrl($params) {
                             <span class="result-author">Por <?= htmlspecialchars($result['author']) ?></span>
                         </div>
                         <h3><a href="blog/<?= htmlspecialchars($result['slug']) ?>.html"><?= htmlspecialchars($result['title']) ?></a></h3>
-                        <p><?= htmlspecialchars($result['excerpt']) ?></p>
+                        <p><?= htmlspecialchars(html_entity_decode($result['excerpt'], ENT_QUOTES, 'UTF-8')) ?></p>
                         <a href="blog/<?= htmlspecialchars($result['slug']) ?>.html" class="result-read-more">Leer más →</a>
                     </div>
                 </article>

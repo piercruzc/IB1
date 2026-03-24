@@ -127,7 +127,7 @@ function shortDate($dateStr) {
                             <span class="post-author">Por <?= htmlspecialchars($featuredPost['author']) ?></span>
                         </div>
                         <h2><a href="blog/<?= htmlspecialchars($featuredPost['slug']) ?>.html"><?= htmlspecialchars($featuredPost['title']) ?></a></h2>
-                        <p><?= htmlspecialchars($featuredPost['excerpt']) ?></p>
+                        <p><?= htmlspecialchars(html_entity_decode($featuredPost['excerpt'], ENT_QUOTES, 'UTF-8')) ?></p>
                         <a href="blog/<?= htmlspecialchars($featuredPost['slug']) ?>.html" class="read-more">Leer más →</a>
                     </div>
                 </article>
@@ -159,7 +159,7 @@ function shortDate($dateStr) {
                             <span class="post-author">Por <?= htmlspecialchars($post['author']) ?></span>
                         </div>
                         <h3><a href="blog/<?= htmlspecialchars($post['slug']) ?>.html"><?= htmlspecialchars($post['title']) ?></a></h3>
-                        <p><?= htmlspecialchars($post['excerpt']) ?></p>
+                        <p><?= htmlspecialchars(html_entity_decode($post['excerpt'], ENT_QUOTES, 'UTF-8')) ?></p>
                         <a href="blog/<?= htmlspecialchars($post['slug']) ?>.html" class="read-more">Leer más →</a>
                     </div>
                 </article>

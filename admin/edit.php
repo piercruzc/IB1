@@ -43,8 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $author   = 'IB1 Fintech';
 
     // Auto-generate excerpt from content
-    $excerpt = mb_substr(strip_tags($content), 0, 200, 'UTF-8');
-    if (mb_strlen(strip_tags($content), 'UTF-8') > 200) {
+    $excerpt = mb_substr(html_entity_decode(strip_tags($content), ENT_QUOTES, 'UTF-8'), 0, 200, 'UTF-8');
+    if (mb_strlen(html_entity_decode(strip_tags($content), ENT_QUOTES, 'UTF-8'), 'UTF-8') > 200) {
         $excerpt .= '...';
     }
 
